@@ -70,7 +70,7 @@ public class Student {
         else if (verifyEmail(email))
             this.emailAddr = Optional.of(email);
         else
-            throw new IllegalArgumentException("Invalid email address");
+            throw new IllegalArgumentException("Invalid email address : " + email);
     }
 
     @SuppressWarnings("unused")
