@@ -1,6 +1,9 @@
 package de.jotoho.fhswf.se.projectapp.database;
 
+import de.jotoho.fhswf.se.projectapp.Ansprechpartner;
+import de.jotoho.fhswf.se.projectapp.Projekt;
 import de.jotoho.fhswf.se.projectapp.Student;
+import de.jotoho.fhswf.se.projectapp.Unternehmen;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -13,6 +16,35 @@ import java.util.Set;
 
 
 public class Database implements DatabaseInterface {
+    private static final class StringGenerator {
+
+        public static String selectAllStundeten = "select * from Student";
+        private StringGenerator(){}
+
+        public static String selectStudentString(final long Matrikelnummer){
+            return "select * from Student where Matrikelnummer = " + Matrikelnummer;
+        }
+        public static String insertStudentString(Student student){
+            return  "insert into Student(Matrikelnummer,Vorname,Nachname,EMail) " +
+                    "values(" + student.getStudentID() +
+                    ",\"" + student.getFirstName() + '\"' +
+                    ",\"" + student.getFamilyName() + '\"' +
+                    ",\"" + student.getEmailAddr().orElse("") + "\");";
+        }
+
+        public static String updateStudentString(Student student){
+            return  "update Student set " +
+                    "Vorname = \"" + student.getFirstName() + "\"," +
+                    "Nachname = \"" + student.getFamilyName() + "\"," +
+                    "EMail = \"" + student.getEmailAddr().orElse("") + '\"' +
+                    "where Matrikelnummer =" + student.getStudentID();
+        }
+
+        public static  String deleteStudentString(Student student){
+            return  "delete from Student where Matrikelnummer =" + student.getStudentID();
+        }
+    }
+
     private static final String FILE_NAME = "databaseFile.db";
     private static final String PATH_TO_DATABASE_DIR = System.getProperty("user.home") + "/sqlite";
     private static final String PATH_TO_DATABASE_FILE = "jdbc:sqlite:" + PATH_TO_DATABASE_DIR + '/' + FILE_NAME;
@@ -37,11 +69,11 @@ public class Database implements DatabaseInterface {
         try (Connection connection = getConnection()) {
             if (connection != null) {
                 DatabaseMetaData meta = connection.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
-                System.out.println("A new database has been created.");
+                System.err.println("The driver name is " + meta.getDriverName());
+                System.err.println("A new database has been created.");
             }
         } catch (SQLException exception) {
-            System.out.println(exception.getMessage());
+            System.err.println(exception.getMessage());
         }
     }
 
@@ -51,7 +83,7 @@ public class Database implements DatabaseInterface {
         try {
             createScript = Files.readString(createScriptPath);
         } catch (Exception exception) {
-            System.out.println("Database script file could not be read!\n" + exception.getMessage());
+            System.err.println("Database script file could not be read!\n" + exception.getMessage());
         }
         String[] parts = createScript.split("#");
         for (String part : parts)
@@ -62,23 +94,17 @@ public class Database implements DatabaseInterface {
         try {
             return DriverManager.getConnection(PATH_TO_DATABASE_FILE);
         } catch (Exception exception) {
-            System.out.println("Unable to get connection to database!\n" + exception.getMessage());
+            System.err.println("Unable to get connection to database!\n" + exception.getMessage());
         }
         return null;
     }
 
     @SuppressWarnings("unused")
-    public static ResultSet executeSelect(final String select, Connection connection) {
-        ResultSet results = null;
-        try {
-            if (connection != null) {
-                Statement statement = connection.createStatement();
-                results = statement.executeQuery(select);
-            }
-        } catch (SQLException exception) {
-            System.out.println(exception.getMessage());
-        }
-        return results;
+    public static ResultSet executeSelect(final String select, Connection connection) throws SQLException{
+            if (connection != null)
+                return connection.createStatement().executeQuery(select);
+            else
+                throw new SQLException("No connection to database!");
     }
 
     @SuppressWarnings("unused")
@@ -89,33 +115,31 @@ public class Database implements DatabaseInterface {
                 stmt.execute(statement);
             }
         } catch (SQLException exception) {
-            System.out.println(exception.getMessage());
+            System.err.println(exception.getMessage());
         }
     }
 
     private static Student fillStudentWithResult(ResultSet result) throws SQLException {
-        Student newStudent = null;
         if(Student.getLoadedStudent(result.getInt("Matrikelnummer")).isPresent())
             return null;
         if (result.getString("EMail").isEmpty())
-            newStudent = new Student(
+            return new Student(
                     result.getInt("Matrikelnummer"),
                     result.getString("Vorname"),
                     result.getString("Nachname")
             );
         else
-            newStudent = new Student(
+            return new Student(
                     result.getInt("Matrikelnummer"),
                     result.getString("Vorname"),
                     result.getString("Nachname"),
                     result.getString("EMail")
             );
-        return newStudent;
     }
 
     @SuppressWarnings("unused")
     public static Set<Student> loadStudentenFromDatabase() {
-        Set<Student> loadedStudenten = new HashSet<>(Collections.emptySet());
+        final Set<Student> loadedStudenten = new HashSet<>();
         try (ResultSet results = executeSelect(StringGenerator.selectAllStundeten, getConnection())) {
             while (results.next()) {
                 Student newStudent = fillStudentWithResult(results);
@@ -123,55 +147,55 @@ public class Database implements DatabaseInterface {
                     loadedStudenten.add(newStudent);
             }
         } catch (SQLException exception) {
-            System.out.println("Unable to load Studenten!\n" + exception.getMessage());
+            System.err.println("Unable to load Studenten!\n" + exception.getMessage());
         }
         return loadedStudenten;
     }
 
     @SuppressWarnings("unused")
-    public static Optional<Student> selectStudent(final long Matrikelnummer) {
+    public static Optional<Student> selectStudent(final long matrikelnummer) {
         Optional<Student> selectedStudent = Optional.empty();
         try {
-            ResultSet results = Database.executeSelect(StringGenerator.selectStudentString(Matrikelnummer), getConnection());
+            ResultSet results = Database.executeSelect(StringGenerator.selectStudentString(matrikelnummer), getConnection());
             selectedStudent = Optional.ofNullable(fillStudentWithResult(results));
         } catch (Exception exception) {
-            System.out.println("Unable to load Student!\n" + exception.getMessage());
+            System.err.println("Unable to load Student!\n" + exception.getMessage());
         }
         if(selectedStudent.isEmpty())
-            return Student.getLoadedStudent(Matrikelnummer);
+            return Student.getLoadedStudent(matrikelnummer);
         return selectedStudent;
     }
 
     @SuppressWarnings("unused")
     public static void update(final Object object) {
-        switch (object.getClass().getSimpleName()) {
-            case "Student" -> executeStatement(StringGenerator.updateStudentString((Student) object));
-            case "Projekt" -> System.out.println("Projekt not ready");
-            case "Ansprechpartner" -> System.out.println("Ansprechpartner not ready");
-            case "Unternehmen" -> System.out.println("Unternehemen not ready");
-            default -> System.out.println("No implementation for class : " + object.getClass());
+        switch (object) {
+            case Student student -> executeStatement(StringGenerator.updateStudentString(student));
+            case Projekt projekt -> System.err.println("Projekt not ready");
+            case Ansprechpartner partner -> System.err.println("Ansprechpartner not ready");
+            case Unternehmen unternehmen -> System.err.println("Unternehemen not ready");
+            default -> System.err.println("No implementation for class : " + object.getClass());
         }
     }
 
     @SuppressWarnings("unused")
     public static void delete(final Object object) {
-        switch (object.getClass().getSimpleName()) {
-            case "Student" -> executeStatement(StringGenerator.deleteStudentString((Student) object));
-            case "Projekt" -> System.out.println("Projekt not ready");
-            case "Ansprechpartner" -> System.out.println("Ansprechpartner not ready");
-            case "Unternehmen" -> System.out.println("Unternehemen not ready");
-            default -> System.out.println("No implementation for class : " + object.getClass());
+        switch (object) {
+            case Student student -> executeStatement(StringGenerator.deleteStudentString(student));
+            case Projekt projekt -> System.err.println("Projekt not ready");
+            case Ansprechpartner partner -> System.err.println("Ansprechpartner not ready");
+            case Unternehmen unternehmen -> System.err.println("Unternehemen not ready");
+            default -> System.err.println("No implementation for class : " + object.getClass());
         }
     }
 
     @SuppressWarnings("unused")
     public static void insert(final Object object) {
-        switch (object.getClass().getSimpleName()) {
-            case "Student" -> executeStatement(StringGenerator.insertStudentString((Student) object));
-            case "Projekt" -> System.out.println("Projekt not ready");
-            case "Ansprechpartner" -> System.out.println("Ansprechpartner not ready");
-            case "Unternehmen" -> System.out.println("Unternehemen not ready");
-            default -> System.out.println("No implementation for class : " + object.getClass());
+        switch (object) {
+            case Student student -> executeStatement(StringGenerator.insertStudentString(student));
+            case Projekt projekt -> System.err.println("Projekt not ready");
+            case Ansprechpartner partner -> System.err.println("Ansprechpartner not ready");
+            case Unternehmen unternehmen -> System.err.println("Unternehemen not ready");
+            default -> System.err.println("No implementation for class : " + object.getClass());
         }
     }
 }
