@@ -7,7 +7,7 @@ public final class StringGenerator {
     public static String selectAllStundeten = "select * from Student";
     private StringGenerator(){}
 
-    public static String selectStudentString(long Matrikelnummer){
+    public static String selectStudentString(final long Matrikelnummer){
         return "select * from Student where Matrikelnummer = " + Matrikelnummer;
     }
     public static String insertStudentString(Student student){

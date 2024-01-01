@@ -7,18 +7,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.HashSet;
 
 
-public class Database implements DatabaseInterface{
+public class Database implements DatabaseInterface {
     private static final String FILE_NAME = "databaseFile.db";
-    private static final String PATH_TO_DATABASE_DIR = System.getProperty("user.home")+"/sqlite";
+    private static final String PATH_TO_DATABASE_DIR = System.getProperty("user.home") + "/sqlite";
     private static final String PATH_TO_DATABASE_FILE = "jdbc:sqlite:" + PATH_TO_DATABASE_DIR + '/' + FILE_NAME;
     private static final Path createScriptPath = Path.of("src/main/resources/createScript.sql");
 
-    public static void initDatabase(){
+    public static void initDatabase() {
         createNewDirectory();
         createNewDatabaseFile();
         createDatabaseTables();
@@ -40,42 +40,43 @@ public class Database implements DatabaseInterface{
                 System.out.println("The driver name is " + meta.getDriverName());
                 System.out.println("A new database has been created.");
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException exception) {
+            System.out.println(exception.getMessage());
         }
     }
 
     @SuppressWarnings("unused")
-    private static void createDatabaseTables(){
+    private static void createDatabaseTables() {
         String createScript = "";
         try {
             createScript = Files.readString(createScriptPath);
-        }catch (Exception e){
-            System.out.println("Database script file could not be read!\n" + e.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Database script file could not be read!\n" + exception.getMessage());
         }
-        String [] parts = createScript.split("#");
-        for(String part : parts)
+        String[] parts = createScript.split("#");
+        for (String part : parts)
             executeStatement(part);
     }
-    private static Connection getConnection(){
+
+    private static Connection getConnection() {
         try {
             return DriverManager.getConnection(PATH_TO_DATABASE_FILE);
-        }catch(Exception e){
-            System.out.println("Unable to get connection to database!\n" + e.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unable to get connection to database!\n" + exception.getMessage());
         }
         return null;
     }
 
     @SuppressWarnings("unused")
-    public static ResultSet executeSelect(final String select,Connection connection){
+    public static ResultSet executeSelect(final String select, Connection connection) {
         ResultSet results = null;
-        try{
+        try {
             if (connection != null) {
                 Statement statement = connection.createStatement();
                 results = statement.executeQuery(select);
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException exception) {
+            System.out.println(exception.getMessage());
         }
         return results;
     }
@@ -87,43 +88,63 @@ public class Database implements DatabaseInterface{
                 Statement stmt = connection.createStatement();
                 stmt.execute(statement);
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException exception) {
+            System.out.println(exception.getMessage());
         }
     }
 
+    private static Student fillStudentWithResult(ResultSet result) throws SQLException {
+        Student newStudent = null;
+        if(Student.getLoadedStudent(result.getInt("Matrikelnummer")).isPresent())
+            return null;
+        if (result.getString("EMail").isEmpty())
+            newStudent = new Student(
+                    result.getInt("Matrikelnummer"),
+                    result.getString("Vorname"),
+                    result.getString("Nachname")
+            );
+        else
+            newStudent = new Student(
+                    result.getInt("Matrikelnummer"),
+                    result.getString("Vorname"),
+                    result.getString("Nachname"),
+                    result.getString("EMail")
+            );
+        return newStudent;
+    }
+
     @SuppressWarnings("unused")
-    public static Set<Student> loadStudentenFromDatabase(){
+    public static Set<Student> loadStudentenFromDatabase() {
         Set<Student> loadedStudenten = new HashSet<>(Collections.emptySet());
-        try(ResultSet results = executeSelect(StringGenerator.selectAllStundeten,getConnection())) {
+        try (ResultSet results = executeSelect(StringGenerator.selectAllStundeten, getConnection())) {
             while (results.next()) {
-                if(Student.getLoadedStudent(results.getInt("Matrikelnummer")).isPresent())
-                    continue;
-                Student newStudent = null;
-                if(results.getString("EMail").isEmpty())
-                     newStudent = new Student(
-                            results.getInt("Matrikelnummer"),
-                            results.getString("Vorname"),
-                            results.getString("Nachname")
-                    );
-                else
-                    newStudent = new Student(
-                            results.getInt("Matrikelnummer"),
-                            results.getString("Vorname"),
-                            results.getString("Nachname"),
-                            results.getString("EMail")
-                    );
-                loadedStudenten.add(newStudent);
+                Student newStudent = fillStudentWithResult(results);
+                if(newStudent != null)
+                    loadedStudenten.add(newStudent);
             }
-        } catch (SQLException e) {
-            System.out.println("Unable to load Studenten!\n" + e.getMessage());
+        } catch (SQLException exception) {
+            System.out.println("Unable to load Studenten!\n" + exception.getMessage());
         }
         return loadedStudenten;
     }
 
     @SuppressWarnings("unused")
-    public static void update(Object object) {
-        switch(object.getClass().getSimpleName()){
+    public static Optional<Student> selectStudent(final long Matrikelnummer) {
+        Optional<Student> selectedStudent = Optional.empty();
+        try {
+            ResultSet results = Database.executeSelect(StringGenerator.selectStudentString(Matrikelnummer), getConnection());
+            selectedStudent = Optional.ofNullable(fillStudentWithResult(results));
+        } catch (Exception exception) {
+            System.out.println("Unable to load Student!\n" + exception.getMessage());
+        }
+        if(selectedStudent.isEmpty())
+            return Student.getLoadedStudent(Matrikelnummer);
+        return selectedStudent;
+    }
+
+    @SuppressWarnings("unused")
+    public static void update(final Object object) {
+        switch (object.getClass().getSimpleName()) {
             case "Student" -> executeStatement(StringGenerator.updateStudentString((Student) object));
             case "Projekt" -> System.out.println("Projekt not ready");
             case "Ansprechpartner" -> System.out.println("Ansprechpartner not ready");
@@ -133,8 +154,8 @@ public class Database implements DatabaseInterface{
     }
 
     @SuppressWarnings("unused")
-    public static void delete(Object object) {
-        switch(object.getClass().getSimpleName()){
+    public static void delete(final Object object) {
+        switch (object.getClass().getSimpleName()) {
             case "Student" -> executeStatement(StringGenerator.deleteStudentString((Student) object));
             case "Projekt" -> System.out.println("Projekt not ready");
             case "Ansprechpartner" -> System.out.println("Ansprechpartner not ready");
@@ -144,8 +165,8 @@ public class Database implements DatabaseInterface{
     }
 
     @SuppressWarnings("unused")
-    public static void insert(Object object) {
-        switch(object.getClass().getSimpleName()){
+    public static void insert(final Object object) {
+        switch (object.getClass().getSimpleName()) {
             case "Student" -> executeStatement(StringGenerator.insertStudentString((Student) object));
             case "Projekt" -> System.out.println("Projekt not ready");
             case "Ansprechpartner" -> System.out.println("Ansprechpartner not ready");
