@@ -129,7 +129,8 @@ public final class OptionSelectionMenu<T> {
             return;
         }
 
-        try (final var reader = new BufferedReader(new InputStreamReader(System.in))) {
+        final var scanner = new Scanner(System.in);
+
             while (isNull(this.selectedOption) || freshActivation ||
                    this.selectedOption.filter(this.options::contains).isEmpty()) {
                 if (freshActivation)
@@ -143,7 +144,7 @@ public final class OptionSelectionMenu<T> {
                     else
                         System.out.print("Wählen Sie eine Option: ");
 
-                    final String userInput = reader.readLine().strip();
+                    final String userInput = scanner.nextLine().strip();
 
                     if (this.listingEnabled && userInput.equals("l")) {
                         printOptionsAsList();
@@ -169,7 +170,7 @@ public final class OptionSelectionMenu<T> {
                 catch (final NumberFormatException ignore) {
                 }
             }
-        } catch (final IOException ignore) {}
+
     }
 
     public synchronized Optional<Option<T>> getSelectedOption() {
