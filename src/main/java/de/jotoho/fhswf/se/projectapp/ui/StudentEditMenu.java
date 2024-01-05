@@ -2,8 +2,7 @@ package de.jotoho.fhswf.se.projectapp.ui;
 
 import de.jotoho.fhswf.se.projectapp.Student;
 import de.jotoho.fhswf.se.projectapp.ui.OptionSelectionMenu.Option;
-import static java.util.Objects.isNull;
-import static java.util.Objects.requireNonNull;
+import static java.util.Objects.*;
 
 import java.io.PrintStream;
 import java.time.Duration;
@@ -102,10 +101,9 @@ public final class StudentEditMenu {
                         }
                     }
                     final var line = scanner.nextLine();
-                    if (isNull(line)) {
-                        throw new RuntimeException("console was closed prematurely");
+                    if (nonNull(line)) {
+                        newName = line.strip();
                     }
-                    newName = line.strip();
                 }
                 student.setFamilyName(newName);
             }
@@ -127,10 +125,9 @@ public final class StudentEditMenu {
                         }
                     }
                     final var line = scanner.nextLine();
-                    if (isNull(line)) {
-                        throw new RuntimeException("console was closed prematurely");
+                    if (nonNull(line)) {
+                        newName = line.strip();
                     }
-                    newName = line.strip();
                 }
                 student.setFirstName(newName);
             }
@@ -153,7 +150,7 @@ public final class StudentEditMenu {
                     }
                     final var line = scanner.nextLine();
                     if (isNull(line)) {
-                        throw new RuntimeException("console was closed prematurely");
+                        continue;
                     }
                     else if (line.isBlank()) {
                         student.setEmail(null);
