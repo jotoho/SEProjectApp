@@ -32,7 +32,7 @@ public final class StudentEditMenu {
     private StudentEditMenu() {
     }
 
-    public static void listStudent(final Student student, final PrintStream output) {
+    public static void listStudent(final Student student) {
         System.out.println("== Studenteninformation ==");
         System.out.print("Matrikelnummer: ");
         System.out.println(student.getStudentID());
@@ -41,7 +41,17 @@ public final class StudentEditMenu {
         System.out.print("Vorname: ");
         System.out.println(student.getFirstName());
         System.out.print("Emailadresse: ");
-        System.out.println(student.getEmailAddr().orElse("<nicht vorhanden>"));
+        System.out.println(student.getEmailAddr().orElse("nicht vorhanden"));
+    }
+
+    /**
+     * For API backwards-compatibility only.
+     * @deprecated
+     * */
+    @Deprecated(forRemoval = true)
+    public static void listStudent(final Student student,
+                                   final PrintStream unused) {
+        listStudent(student);
     }
 
     public static void editStudent(final Student student) {
@@ -50,6 +60,7 @@ public final class StudentEditMenu {
         Optional<Option<AttributeSelector>> selection = Optional.empty();
         boolean firstTime = true;
         while (firstTime || selection.map(Option::get).isPresent()) {
+            listStudent(student);
             firstTime = false;
             final OptionSelectionMenu<AttributeSelector> menu = new OptionSelectionMenu<>(
                     "Welches Attribut möchten Sie bearbeiten" + "? ('beenden' zum beenden)");

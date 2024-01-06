@@ -1,8 +1,10 @@
 package de.jotoho.fhswf.se.projectapp.ui;
 
 import de.jotoho.fhswf.se.projectapp.Student;
+import static java.util.Objects.requireNonNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public final class StudentList {
     private StudentList() {
@@ -10,6 +12,7 @@ public final class StudentList {
     }
 
     public static String getFormattedStudentList(final Collection<Student> students) {
+        requireNonNull(students);
         final int maxLengthIDs = students.parallelStream()
                                          .mapToLong(Student::getStudentID)
                                          .mapToObj(Long::toUnsignedString)
@@ -37,15 +40,11 @@ public final class StudentList {
                                            .orElse(0);
 
         final StringBuilder result = new StringBuilder();
-        for(final Student student : students.parallelStream()
-                                            .sorted(Comparator.comparingLong(Student::getStudentID))
-                                            .toList()) {
-            final String sID = Long.toUnsignedString(student.getStudentID());
-            final String sFamilyName = student.getFamilyName();
-            final String sFirstName = student.getFirstName();
-            final String sEmail = student.getEmailAddr()
-                                         .map(s -> "<" + s + ">")
-                                         .orElse("");
+        final Consumer<Student> printFn = st -> {
+            final String sID = Long.toUnsignedString(st.getStudentID());
+            final String sFamilyName = st.getFamilyName();
+            final String sFirstName = st.getFirstName();
+            final String sEmail = st.getEmailAddr().map(s -> "<" + s + ">").orElse("");
 
             result.repeat(" ", maxLengthIDs - sID.length())
                   .append(sID)
@@ -56,14 +55,18 @@ public final class StudentList {
                   .repeat(" ", maxLengthEmail - sEmail.length() + 1)
                   .append(sEmail)
                   .append("\n");
-        }
+        };
+
+        students.stream()
+                .sorted(Comparator.comparingLong(Student::getStudentID))
+                .forEachOrdered(printFn);
 
         return result.toString();
     }
 
     public static void main(final String[] args) {
         final int NUM_STUDENTS = 30;
-        final var students = new ArrayList<Student>(NUM_STUDENTS);
+        final var students = new HashSet<Student>(NUM_STUDENTS);
         for (int i = 0; i < NUM_STUDENTS; i++) {
             long randomNumber = -1;
             while (randomNumber < 0
@@ -77,7 +80,7 @@ public final class StudentList {
                                 "Max",
                                 "Mustermann",
                                 "max@mustermann.de");
-            students.addLast(s);
+            students.add(s);
         }
 
         System.out.println(getFormattedStudentList(students));

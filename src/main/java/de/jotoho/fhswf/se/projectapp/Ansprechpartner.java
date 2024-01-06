@@ -18,7 +18,8 @@ public class Ansprechpartner {
 
     public static Optional<Ansprechpartner> getInstanceRef(final long ansprechpartnerID) {
         return Optional.ofNullable(knownInstances.getOrDefault(ansprechpartnerID,
-                                                               new WeakReference<>(null)).get());
+                                                               new WeakReference<>(null))
+                                                 .get());
     }
 
     public long getID() {
