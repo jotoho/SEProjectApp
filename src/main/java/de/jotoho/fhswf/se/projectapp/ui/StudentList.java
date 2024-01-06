@@ -1,6 +1,7 @@
 package de.jotoho.fhswf.se.projectapp.ui;
 
 import de.jotoho.fhswf.se.projectapp.Student;
+import static java.util.Objects.requireNonNull;
 
 import java.util.*;
 
@@ -10,6 +11,7 @@ public final class StudentList {
     }
 
     public static String getFormattedStudentList(final Collection<Student> students) {
+        requireNonNull(students);
         final int maxLengthIDs = students.parallelStream()
                                          .mapToLong(Student::getStudentID)
                                          .mapToObj(Long::toUnsignedString)
