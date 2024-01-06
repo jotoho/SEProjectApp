@@ -136,7 +136,7 @@ public final class StudentEditMenu {
                         "Geben Sie eine neue Emailadresse für Studenten " + student.getStudentID() +
                         " ein.");
                 String newName = null;
-                while (isNull(newName) || newName.isBlank() ||
+                while (isNull(newName) || newName.isBlank() || newName.length() > 90 ||
                        !emailPattern.matcher(newName).matches()) {
                     System.out.print("Neue Email: ");
                     while (!scanner.hasNextLine()) {
