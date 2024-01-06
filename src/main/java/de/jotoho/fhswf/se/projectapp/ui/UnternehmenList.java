@@ -3,10 +3,7 @@ package de.jotoho.fhswf.se.projectapp.ui;
 import de.jotoho.fhswf.se.projectapp.Unternehmen;
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
@@ -48,11 +45,11 @@ public final class UnternehmenList {
 
     public static void main(final String[] args) {
         final Random rng = new Random();
-        final ArrayList<Unternehmen> list = new ArrayList<>();
-        list.add(new Unternehmen(rng.nextInt(1_000_000), "Organization A"));
-        list.add(new Unternehmen(rng.nextInt(1_000_000), "Organization B"));
-        list.add(new Unternehmen(rng.nextInt(1_000_000), "Organization C"));
-        list.add(new Unternehmen(rng.nextInt(1_000_000), "Organization D"));
-        System.out.println(getFormatted(list));
+        final var orgs = new HashSet<Unternehmen>();
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization A"));
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization B"));
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization C"));
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization D"));
+        System.out.println(getFormatted(orgs));
     }
 }

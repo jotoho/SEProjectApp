@@ -4,10 +4,7 @@ import de.jotoho.fhswf.se.projectapp.Ansprechpartner;
 import de.jotoho.fhswf.se.projectapp.Unternehmen;
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public final class AnsprechpartnerList {
@@ -66,7 +63,7 @@ public final class AnsprechpartnerList {
 
     public static void main(final String[] args) {
         final Random rng = new Random();
-        final ArrayList<Ansprechpartner> list = new ArrayList<>();
+        final var contacts = new HashSet<Ansprechpartner>();
         final var orgA = new Unternehmen(rng.nextInt(1_000_000), "OrgA");
         final var orgB = new Unternehmen(rng.nextInt(1_000_000), "OrgB");
         final var personA =
@@ -79,10 +76,9 @@ public final class AnsprechpartnerList {
                                     "Emilia",
                                     "Musterfrau",
                                     orgB);
-        list.add(personA);
-        list.add(personB);
+        contacts.add(personA);
+        contacts.add(personB);
 
-
-        System.out.println(getFormatted(list));
+        System.out.println(getFormatted(contacts));
     }
 }
