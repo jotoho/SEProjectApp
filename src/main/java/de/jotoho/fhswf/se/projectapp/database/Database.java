@@ -83,11 +83,11 @@ public final class Database {
         return IDs;
     }
 
-    public static boolean checkIfStudentExists(final long matrikelnummer){
+    public static boolean checkIfStudentExists(final long matrikelnummer) {
         return getStudentIDsFromDatabase().contains(matrikelnummer);
     }
 
-    public static void saveStudents(){
+    public static void saveStudents() {
         System.out.println("Speichern der neuen Studenten");
         insertNewStudents();
         System.out.println("Updaten der alten Studenten");
@@ -126,12 +126,12 @@ public final class Database {
     }
 
     @SuppressWarnings("unused")
-    public static void addStudent(final Student student){
+    public static void addStudent(final Student student) {
         loadedStudents.add(student);
     }
 
     @SuppressWarnings("unused")
-    public static void removeStudent(final Student student){
+    public static void removeStudent(final Student student) {
         loadedStudents.remove(student);
     }
 
@@ -157,7 +157,7 @@ public final class Database {
 
     private static Student fillStudentWithResult(final ResultSet result) throws SQLException {
         Objects.requireNonNull(result);
-        if(Student.getLoadedStudent(result.getLong("Matrikelnummer")).isPresent())
+        if (Student.getLoadedStudent(result.getLong("Matrikelnummer")).isPresent())
             return null;
         if (result.getString("EMail").isEmpty())
             return new Student(

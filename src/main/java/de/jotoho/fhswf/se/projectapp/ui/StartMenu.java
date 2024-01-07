@@ -82,7 +82,7 @@ public final class StartMenu {
                 .map(OptionSelectionMenu.Option::get).orElse("Fehler");
 
         switch (option) {
-            case OPTION_SHOW_STUDENTS ->{
+            case OPTION_SHOW_STUDENTS -> {
                 System.out.println(StudentList.getFormattedStudentList(Database.getStudents()));
                 userOptions();
             }
@@ -92,7 +92,7 @@ public final class StartMenu {
                 userOptions();
             }
             case OPTION_DELETE_STUDENT -> deleteStudentMenu();
-            
+
             case OPTION_SHOW_STUDENT -> {
                 System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
                 Database.getStudent(getMatrikelnummer(new Scanner(System.in))).ifPresent(StudentEditMenu::listStudent);
@@ -111,31 +111,32 @@ public final class StartMenu {
         }
     }
 
-    private static void deleteStudentMenu(){
+    private static void deleteStudentMenu() {
         System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
         final long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
         final Optional<Student> student = Database.getStudent(matrikelnummer);
-        if(student.isEmpty()) {
+        if (student.isEmpty()) {
             System.out.print("Kein Student mit dieser Matrikelnummer vorhanden!");
             userOptions();
         }
         student.ifPresent(StudentEditMenu::listStudent);
         System.out.print("Wirklich löschen?[Y/N]");
-        if(!new Scanner(System.in).next().equals("Y"))
+        if (!new Scanner(System.in).next().equals("Y"))
             userOptions();
         student.ifPresent(Database::removeStudent);
         userOptions();
     }
-    private static void createStudentMenu(){
+
+    private static void createStudentMenu() {
         System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
         long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
-        if(Database.checkIfStudentExists(matrikelnummer)){
+        if (Database.checkIfStudentExists(matrikelnummer)) {
             System.out.print("Matrikelnummer wird bereits verwendet!");
             userOptions();
         }
-        final Student newStudent = new Student(matrikelnummer,DUMMY_FIRSTNAME,DUMMY_LASTNAME);
+        final Student newStudent = new Student(matrikelnummer, DUMMY_FIRSTNAME, DUMMY_LASTNAME);
         StudentEditMenu.editStudent(newStudent);
-        if(newStudent.getFirstName().equals(DUMMY_FIRSTNAME) || newStudent.getFamilyName().equals(DUMMY_LASTNAME)){
+        if (newStudent.getFirstName().equals(DUMMY_FIRSTNAME) || newStudent.getFamilyName().equals(DUMMY_LASTNAME)) {
             System.out.print("Bitte die Einträge mit " + DUMMY_LASTNAME + " oder " + DUMMY_LASTNAME + " ändern!");
             StudentEditMenu.editStudent(newStudent);
         }
