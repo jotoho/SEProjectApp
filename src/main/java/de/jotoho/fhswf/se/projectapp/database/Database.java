@@ -13,35 +13,6 @@ import java.util.*;
 
 
 public final class Database {
-    private static final class StringGenerator {
-        public static String SELECT_ALL_STUDENTEN = "select * from Student";
-        public static String GET_ALL_STUDENT_IDS = "select Matrikelnummer from Student ";
-        private StringGenerator(){}
-
-        public static String selectStudentString(final long Matrikelnummer){
-            return "select * from Student where Matrikelnummer = " + Matrikelnummer;
-        }
-        public static String insertStudentString(final Student student){
-            return  "insert into Student(Matrikelnummer,Vorname,Nachname,EMail) " +
-                    "values(" + student.getStudentID() +
-                    ",\"" + student.getFirstName() + '\"' +
-                    ",\"" + student.getFamilyName() + '\"' +
-                    ",\"" + student.getEmailAddr().orElse("") + "\");";
-        }
-
-        public static String updateStudentString(final Student student){
-            return  "update Student set " +
-                    "Vorname = \"" + student.getFirstName() + "\"," +
-                    "Nachname = \"" + student.getFamilyName() + "\"," +
-                    "EMail = \"" + student.getEmailAddr().orElse("") + '\"' +
-                    "where Matrikelnummer =" + student.getStudentID();
-        }
-
-        public static  String deleteStudentString(final long studentID){
-            return  "delete from Student where Matrikelnummer =" + studentID;
-        }
-    }
-
     private static final String FILE_NAME = "databaseFile.db";
     private static final String PATH_TO_DATABASE_DIR = System.getProperty("user.home") + "/sqlite";
     private static final String PATH_TO_DATABASE_FILE = "jdbc:sqlite:" + PATH_TO_DATABASE_DIR + '/' + FILE_NAME;
@@ -54,7 +25,6 @@ public final class Database {
         createDatabaseTables();
         loadedStudents = loadStudentsFromDatabase();
     }
-
 
     @SuppressWarnings("unused")
     private static void createNewDirectory() {
@@ -97,46 +67,58 @@ public final class Database {
         return null;
     }
 
-    public static Set<Student> getStudents(){
+    public static Set<Student> getStudents() {
         return Collections.unmodifiableSet(loadedStudents);
     }
 
-    private static Set<Long> getStudentIDsFromDatabase(){
+    private static Set<Long> getStudentIDsFromDatabase() {
         final Set<Long> IDs = new HashSet<>();
-        try{
-            final ResultSet results = executeQuery(StringGenerator.GET_ALL_STUDENT_IDS,getConnection());
-            while(results.next())
+        try {
+            final ResultSet results = executeQuery(StringGenerator.GET_ALL_STUDENT_IDS, getConnection());
+            while (results.next())
                 IDs.add(results.getLong("Matrikelnummer"));
-        }catch (final SQLException sqlException){
+        } catch (final SQLException sqlException) {
             System.err.println(sqlException.getMessage());
         }
         return IDs;
     }
 
+    public static boolean checkIfStudentExists(final long matrikelnummer){
+        return getStudentIDsFromDatabase().contains(matrikelnummer);
+    }
+
+    public static void saveStudents(){
+        System.out.println("Speichern der neuen Studenten");
+        insertNewStudents();
+        System.out.println("Updaten der alten Studenten");
+        updateStudents();
+        System.out.println("Löschen der der gelöschten Studenten");
+        removeDeletedStudents();
+    }
+
     @SuppressWarnings("unused")
-    private static void removeDeletedStudents(){
-        for(final long studentID : getStudentIDsFromDatabase())
-            if(getStudent(studentID).isEmpty())
+    private static void removeDeletedStudents() {
+        for (final long studentID : getStudentIDsFromDatabase())
+            if (getStudent(studentID).isEmpty())
                 executeStatement(StringGenerator.deleteStudentString(studentID));
     }
 
     @SuppressWarnings("unused")
-    private static void updateStudents(){
-        for(final Student student : getStudents())
+    private static void updateStudents() {
+        for (final Student student : getStudents())
             update(student);
     }
 
     @SuppressWarnings("unused")
-    private static void insertNewStudents(){
-        for(final Student student : loadedStudents)
-            if(selectStudentFromDatabase(student.getStudentID()).isEmpty())
+    private static void insertNewStudents() {
+        for (final Student student : loadedStudents)
+            if (!checkIfStudentExists(student.getStudentID()))
                 insert(student);
     }
 
-
-    public static Optional<Student> getStudent(final long matrikelnummer){
+    public static Optional<Student> getStudent(final long matrikelnummer) {
         Optional<Student> matchingStudent = Optional.empty();
-        for(final Student student : loadedStudents){
+        for (final Student student : loadedStudents) {
             if (student.getStudentID() == matrikelnummer)
                 matchingStudent = Optional.of(student);
         }
@@ -144,11 +126,21 @@ public final class Database {
     }
 
     @SuppressWarnings("unused")
-    public static ResultSet executeQuery(final String select, final Connection connection) throws SQLException{
-            if (connection != null)
-                return connection.createStatement().executeQuery(select);
-            else
-                throw new SQLException("No connection to database!");
+    public static void addStudent(final Student student){
+        loadedStudents.add(student);
+    }
+
+    @SuppressWarnings("unused")
+    public static void removeStudent(final Student student){
+        loadedStudents.remove(student);
+    }
+
+    @SuppressWarnings("unused")
+    public static ResultSet executeQuery(final String select, final Connection connection) throws SQLException {
+        if (connection != null)
+            return connection.createStatement().executeQuery(select);
+        else
+            throw new SQLException("No connection to database!");
     }
 
     @SuppressWarnings("unused")
@@ -164,7 +156,8 @@ public final class Database {
     }
 
     private static Student fillStudentWithResult(final ResultSet result) throws SQLException {
-        if(Student.getLoadedStudent(result.getInt("Matrikelnummer")).isPresent())
+        Objects.requireNonNull(result);
+        if(Student.getLoadedStudent(result.getLong("Matrikelnummer")).isPresent())
             return null;
         if (result.getString("EMail").isEmpty())
             return new Student(
@@ -183,29 +176,29 @@ public final class Database {
 
     @SuppressWarnings("unused")
     public static Set<Student> loadStudentsFromDatabase() {
-        final Set<Student> loadedStudenten = new HashSet<>();
-        try (ResultSet results = executeQuery(StringGenerator.SELECT_ALL_STUDENTEN, getConnection())) {
+        final Set<Student> loadedStudents = new HashSet<>();
+        try (ResultSet results = executeQuery(StringGenerator.SELECT_ALL_STUDENTS, getConnection())) {
             while (results.next()) {
                 Student newStudent = fillStudentWithResult(results);
-                if(newStudent != null)
-                    loadedStudenten.add(newStudent);
+                if (newStudent != null)
+                    loadedStudents.add(newStudent);
             }
         } catch (SQLException exception) {
             System.err.println("Unable to load Studenten!\n" + exception.getMessage());
         }
-        return loadedStudenten;
+        return loadedStudents;
     }
 
     @SuppressWarnings("unused")
     public static Optional<Student> selectStudentFromDatabase(final long matrikelnummer) {
         Optional<Student> selectedStudent = Optional.empty();
         try {
-            ResultSet results = Database.executeQuery(StringGenerator.selectStudentString(matrikelnummer), getConnection());
+            final ResultSet results = Database.executeQuery(StringGenerator.selectStudentString(matrikelnummer), getConnection());
             selectedStudent = Optional.ofNullable(fillStudentWithResult(results));
-        } catch (Exception exception) {
-            System.err.println("Unable to load Student!\n" + exception.getMessage());
+        } catch (final Exception exception) {
+            System.err.println("Unable to select Student!\n" + exception.getMessage());
         }
-        if(selectedStudent.isEmpty())
+        if (selectedStudent.isEmpty())
             return Student.getLoadedStudent(matrikelnummer);
         return selectedStudent;
     }
@@ -240,6 +233,38 @@ public final class Database {
             case Ansprechpartner partner -> System.err.println("Ansprechpartner not ready");
             case Unternehmen unternehmen -> System.err.println("Unternehemen not ready");
             default -> System.err.println("No implementation for class : " + object.getClass());
+        }
+    }
+
+    private static final class StringGenerator {
+        public static String SELECT_ALL_STUDENTS = "select * from Student";
+        public static String GET_ALL_STUDENT_IDS = "select Matrikelnummer from Student ";
+
+        private StringGenerator() {
+        }
+
+        public static String selectStudentString(final long Matrikelnummer) {
+            return "select * from Student where Matrikelnummer = " + Matrikelnummer;
+        }
+
+        public static String insertStudentString(final Student student) {
+            return "insert into Student(Matrikelnummer,Vorname,Nachname,EMail) " +
+                    "values(" + student.getStudentID() +
+                    ",\"" + student.getFirstName() + '\"' +
+                    ",\"" + student.getFamilyName() + '\"' +
+                    ",\"" + student.getEmailAddr().orElse("") + "\");";
+        }
+
+        public static String updateStudentString(final Student student) {
+            return "update Student set " +
+                    "Vorname = \"" + student.getFirstName() + "\"," +
+                    "Nachname = \"" + student.getFamilyName() + "\"," +
+                    "EMail = \"" + student.getEmailAddr().orElse("") + '\"' +
+                    "where Matrikelnummer =" + student.getStudentID();
+        }
+
+        public static String deleteStudentString(final long studentID) {
+            return "delete from Student where Matrikelnummer =" + studentID;
         }
     }
 }
