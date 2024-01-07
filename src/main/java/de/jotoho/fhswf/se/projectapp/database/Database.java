@@ -17,13 +17,13 @@ public final class Database {
     private static final String PATH_TO_DATABASE_DIR = System.getProperty("user.home") + "/sqlite";
     private static final String PATH_TO_DATABASE_FILE = "jdbc:sqlite:" + PATH_TO_DATABASE_DIR + '/' + FILE_NAME;
     private static final Path createScriptPath = Path.of("src/main/resources/createScript.sql");
-    private static Set<Student> loadedStudents = new HashSet<>();
+    private static final  Set<Student> loadedStudents = new HashSet<>();
 
     public static void initDatabase() {
         createNewDirectory();
         createNewDatabaseFile();
         createDatabaseTables();
-        loadedStudents = loadStudentsFromDatabase();
+        loadedStudents.addAll(loadStudentsFromDatabase());
     }
 
     @SuppressWarnings("unused")
@@ -72,15 +72,15 @@ public final class Database {
     }
 
     private static Set<Long> getStudentIDsFromDatabase() {
-        final Set<Long> IDs = new HashSet<>();
+        final Set<Long> ids = new HashSet<>();
         try {
             final ResultSet results = executeQuery(StringGenerator.GET_ALL_STUDENT_IDS, getConnection());
             while (results.next())
-                IDs.add(results.getLong("Matrikelnummer"));
+                ids.add(results.getLong("Matrikelnummer"));
         } catch (final SQLException sqlException) {
             System.err.println(sqlException.getMessage());
         }
-        return IDs;
+        return ids;
     }
 
     public static boolean checkIfStudentExists(final long matrikelnummer) {
@@ -88,11 +88,8 @@ public final class Database {
     }
 
     public static void saveStudents() {
-        System.out.println("Speichern der neuen Studenten");
         insertNewStudents();
-        System.out.println("Updaten der alten Studenten");
         updateStudents();
-        System.out.println("Löschen der der gelöschten Studenten");
         removeDeletedStudents();
     }
 

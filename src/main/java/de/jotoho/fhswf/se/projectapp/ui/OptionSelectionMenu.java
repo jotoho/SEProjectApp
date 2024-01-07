@@ -9,10 +9,29 @@ import static java.util.function.Predicate.not;
 
 @SuppressWarnings("unused")
 public final class OptionSelectionMenu<T> {
+    public record Option<T>(String label,
+                            Set<String> aliases,
+                            boolean enumerate,
+                            T value,
+                            Callable<T> code) {
+
+        public T get() {
+            if (nonNull(value))
+                return value;
+            if (nonNull(code)) {
+                try {
+                    return code.call();
+                } catch (Throwable ignore) {}
+            }
+            return null;
+        }
+    }
+
     private final SequencedSet<Option<T>> options = new LinkedHashSet<>();
     private final String prompt;
     private Optional<Option<T>> selectedOption = Optional.empty();
     private boolean listingEnabled = true;
+
     public OptionSelectionMenu(final String prompt) {
         super();
         requireNonNull(prompt);
@@ -63,7 +82,7 @@ public final class OptionSelectionMenu<T> {
 
     /**
      * @return an unmodifiable view of the internal set-of-options
-     */
+     * */
     public SequencedSet<Option<T>> getOptions() {
         return unmodifiableSequencedSet(this.options);
     }
@@ -144,7 +163,8 @@ public final class OptionSelectionMenu<T> {
                 if (enumerators.size() >= index + 1) {
                     this.selectedOption = Optional.of(enumerators.get(index));
                 }
-            } catch (final NumberFormatException ignore) {
+            }
+            catch (final NumberFormatException ignore) {
             }
         }
 
@@ -152,24 +172,5 @@ public final class OptionSelectionMenu<T> {
 
     public synchronized Optional<Option<T>> getSelectedOption() {
         return this.selectedOption;
-    }
-
-    public record Option<T>(String label,
-                            Set<String> aliases,
-                            boolean enumerate,
-                            T value,
-                            Callable<T> code) {
-
-        public T get() {
-            if (nonNull(value))
-                return value;
-            if (nonNull(code)) {
-                try {
-                    return code.call();
-                } catch (Throwable ignore) {
-                }
-            }
-            return null;
-        }
     }
 }

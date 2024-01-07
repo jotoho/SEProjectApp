@@ -6,8 +6,8 @@ import de.jotoho.fhswf.se.projectapp.database.Database;
 import java.util.*;
 
 public final class StartMenu {
-    private static final String DUMMY_FIRSTNAME = "Placeholder";
-    private static final String DUMMY_LASTNAME = "Placeholder";
+    private static final String DUMMY_FIRSTNAME = "Platzhalter";
+    private static final String DUMMY_LASTNAME = "Platzhalter";
     private static final String ROLE_STUDENT = "Student";
     private static final String ROLE_EMPLOYEE = "Angestellter";
     private static final String OPTION_SHOW_STUDENTS = "Alle Studenten anzeigen";
@@ -76,6 +76,7 @@ public final class StartMenu {
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_SAVE, Set.of("Save"), true, OPTION_SAVE, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_EXIT, Set.of("Exit"), true, OPTION_EXIT, null));
         final var selectMenu = new OptionSelectionMenu<>("Wählen sie ihre Option.", optionList);
+
         selectMenu.activate();
 
         final String option = selectMenu.getSelectedOption()
@@ -137,7 +138,7 @@ public final class StartMenu {
         final Student newStudent = new Student(matrikelnummer, DUMMY_FIRSTNAME, DUMMY_LASTNAME);
         StudentEditMenu.editStudent(newStudent);
         if (newStudent.getFirstName().equals(DUMMY_FIRSTNAME) || newStudent.getFamilyName().equals(DUMMY_LASTNAME)) {
-            System.out.print("Bitte die Einträge mit " + DUMMY_LASTNAME + " oder " + DUMMY_LASTNAME + " ändern!");
+            System.out.print("Bitte die Einträge mit " + DUMMY_FIRSTNAME + " oder " + DUMMY_LASTNAME + " ändern!");
             StudentEditMenu.editStudent(newStudent);
         }
         Database.addStudent(newStudent);
