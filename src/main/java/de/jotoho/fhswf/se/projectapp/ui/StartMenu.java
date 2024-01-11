@@ -66,8 +66,8 @@ public final class StartMenu {
 
     public static void userOptions() {
         final List<OptionSelectionMenu.Option<String>> optionList = new ArrayList<>();
-        optionList.add(new OptionSelectionMenu.Option<>(OPTION_SHOW_STUDENTS, Set.of("Student"), true, OPTION_SHOW_STUDENTS, null));
-        optionList.add(new OptionSelectionMenu.Option<>(OPTION_SHOW_STUDENT, Set.of("Students"), true, OPTION_SHOW_STUDENT, null));
+        optionList.add(new OptionSelectionMenu.Option<>(OPTION_SHOW_STUDENTS, Set.of("Students"), true, OPTION_SHOW_STUDENTS, null));
+        optionList.add(new OptionSelectionMenu.Option<>(OPTION_SHOW_STUDENT, Set.of("Student"), true, OPTION_SHOW_STUDENT, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_CREATE_STUDENT, Set.of("Create"), true, OPTION_CREATE_STUDENT, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_EDIT_STUDENT, Set.of("Edit"), true, OPTION_EDIT_STUDENT, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_DELETE_STUDENT, Set.of("Delete"), true, OPTION_DELETE_STUDENT, null));
