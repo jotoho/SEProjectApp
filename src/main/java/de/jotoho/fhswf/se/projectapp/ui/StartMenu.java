@@ -39,15 +39,13 @@ public final class StartMenu {
 
     @SuppressWarnings("unused")
     public static long getMatrikelnummer(final Scanner scanner) {
-        long input = 0;
         try {
-            input = scanner.nextLong();
+            return scanner.nextLong();
         } catch (final Exception InputMismatchException) {
             scanner.next();
             System.out.print("Matrikelnummer hat das falsche Formart! Bitte erneut eingeben: ");
-            getMatrikelnummer(scanner);
+            return getMatrikelnummer(scanner);
         }
-        return input;
     }
 
     @SuppressWarnings("unused")
