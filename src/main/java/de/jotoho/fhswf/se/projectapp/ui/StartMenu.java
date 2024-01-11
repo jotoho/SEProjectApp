@@ -21,7 +21,7 @@ public final class StartMenu {
     private StartMenu() {
     }
 
-    @SuppressWarnings("usused")
+    @SuppressWarnings("unused")
     public static void userRole() {
         final List<OptionSelectionMenu.Option<String>> optionList = new ArrayList<>();
         optionList.add(new OptionSelectionMenu.Option<>(ROLE_STUDENT, Set.of(ROLE_STUDENT), true, ROLE_STUDENT, null));
