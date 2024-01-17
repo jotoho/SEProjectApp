@@ -19,6 +19,7 @@ public final class Database {
     private static final Path createScriptPath = Path.of("src/main/resources/createScript.sql");
     private static final  Set<Student> loadedStudents = new HashSet<>();
     private static final  Set<Unternehmen> loadedUnternehmen = new HashSet<>();
+    private static final Set<Ansprechpartner> loadedAnsprechpartner = new HashSet<>();
 
     public static void initDatabase() {
         createNewDirectory();
@@ -73,6 +74,10 @@ public final class Database {
     }
     public static Set<Unternehmen> getUnternehmen() {
         return Collections.unmodifiableSet(loadedUnternehmen);
+    }
+
+    public static Set<Ansprechpartner> getAnsprechpartner() {
+        return Collections.unmodifiableSet(loadedAnsprechpartner);
     }
 
     private static Set<Long> getStudentIDsFromDatabase() {
@@ -135,6 +140,15 @@ public final class Database {
         return matchingUnternehmen;
     }
 
+    public static Optional<Ansprechpartner> getAnsprechpartner(final long id){
+        Optional<Ansprechpartner> matchingAnsprechpartner = Optional.empty();
+        for (final Ansprechpartner ansprechpartner : loadedAnsprechpartner) {
+            if (ansprechpartner.getID() == id)
+                matchingAnsprechpartner = Optional.of(ansprechpartner);
+        }
+        return matchingAnsprechpartner;
+    }
+
     @SuppressWarnings("unused")
     public static void addStudent(final Student student) {
         loadedStudents.add(student);
@@ -143,6 +157,15 @@ public final class Database {
     @SuppressWarnings("unused")
     public static void removeStudent(final Student student) {
         loadedStudents.remove(student);
+    }
+
+    public static void addAnsprechpartner(final Ansprechpartner ansprechpartner) {
+        loadedAnsprechpartner.add(ansprechpartner);
+    }
+
+    @SuppressWarnings("unused")
+    public static void removeAnsprechpartner(final Ansprechpartner ansprechpartner) {
+        loadedAnsprechpartner.remove(ansprechpartner);
     }
 
     public static void addUnternehmen(final Unternehmen unternehmen) {
