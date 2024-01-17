@@ -96,7 +96,7 @@ public final class StudentMenu {
         long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
         if (Database.checkIfStudentExists(matrikelnummer)) {
             System.out.print("Matrikelnummer wird bereits verwendet!");
-            studentMenu();
+            return null;
         }
         final Student newStudent = new Student(matrikelnummer, DUMMY_FIRSTNAME, DUMMY_LASTNAME);
         StudentEditMenu.editStudent(newStudent);
