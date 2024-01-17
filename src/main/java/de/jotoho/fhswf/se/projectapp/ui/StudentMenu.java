@@ -5,17 +5,19 @@ import de.jotoho.fhswf.se.projectapp.database.Database;
 
 import java.util.*;
 
+import static de.jotoho.fhswf.se.projectapp.ui.StartMenu.startMenu;
+
 @SuppressWarnings("unused")
 public final class StudentMenu {
     private static final String DUMMY_FIRSTNAME = "Platzhalter";
     private static final String DUMMY_LASTNAME = "Platzhalter";
+    private static final String BACK = "Zurück";
     private static final String OPTION_SHOW_STUDENTS = "Alle Studenten anzeigen";
     private static final String OPTION_SHOW_STUDENT = "Einen Studenten anzeigen";
     private static final String OPTION_EDIT_STUDENT = "Student bearbeiten";
     private static final String OPTION_CREATE_STUDENT = "Student erstellen";
     private static final String OPTION_DELETE_STUDENT = "Studenten löschen";
-    private static final String OPTION_SAVE = "Speichern";
-    private static final String OPTION_EXIT = "Beenden";
+
 
     private StudentMenu(){}
 
@@ -36,8 +38,8 @@ public final class StudentMenu {
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_CREATE_STUDENT, Set.of("Create"), true, OPTION_CREATE_STUDENT, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_EDIT_STUDENT, Set.of("Edit"), true, OPTION_EDIT_STUDENT, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_DELETE_STUDENT, Set.of("Delete"), true, OPTION_DELETE_STUDENT, null));
-        optionList.add(new OptionSelectionMenu.Option<>(OPTION_SAVE, Set.of("Save"), true, OPTION_SAVE, null));
-        optionList.add(new OptionSelectionMenu.Option<>(OPTION_EXIT, Set.of("Exit"), true, OPTION_EXIT, null));
+        optionList.add(new OptionSelectionMenu.Option<>(BACK, Set.of("Back"), true, BACK, null));
+
         final var selectMenu = new OptionSelectionMenu<>("Wählen sie ihre Option.", optionList);
 
         selectMenu.activate();
@@ -62,12 +64,7 @@ public final class StudentMenu {
                 Database.getStudent(getMatrikelnummer(new Scanner(System.in))).ifPresent(StudentEditMenu::listStudent);
                 studentMenu();
             }
-            case OPTION_SAVE -> {
-                Database.saveStudents();
-                studentMenu();
-            }
-            case OPTION_CREATE_STUDENT -> createStudentMenu();
-            case OPTION_EXIT -> System.exit(0);
+            case BACK -> startMenu();
             default -> {
                 System.out.print(option + ": Haben wir nich");
                 studentMenu();
@@ -75,7 +72,7 @@ public final class StudentMenu {
         }
     }
 
-    private static void deleteStudentMenu() {
+    public static void deleteStudentMenu() {
         System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
         final long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
         final Optional<Student> student = Database.getStudent(matrikelnummer);
@@ -91,7 +88,7 @@ public final class StudentMenu {
         studentMenu();
     }
 
-    private static void createStudentMenu() {
+    public static void createStudentMenu() {
         System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
         long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
         if (Database.checkIfStudentExists(matrikelnummer)) {
