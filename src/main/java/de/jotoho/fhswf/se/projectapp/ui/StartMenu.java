@@ -12,6 +12,7 @@ public final class StartMenu {
     private static final String ROLE_STUDENT = "Student";
     private static final String ROLE_EMPLOYEE = "Angestellter";
     private static final String STUDENT_MENU = "Studentenmenü";
+    private static final String UNTERNEHMEN_MENU = "Unternehmenmenü";
     private static final String OPTION_SAVE = "Speichern";
     private static final String OPTION_EXIT = "Beenden";
     private StartMenu() {
@@ -55,6 +56,7 @@ public final class StartMenu {
     public static void startMenu(){
         final List<OptionSelectionMenu.Option<String>> optionList = new ArrayList<>();
         optionList.add(new OptionSelectionMenu.Option<>(STUDENT_MENU, Set.of("Student"), true, STUDENT_MENU, null));
+        optionList.add(new OptionSelectionMenu.Option<>(UNTERNEHMEN_MENU, Set.of("Unternehmen"), true, UNTERNEHMEN_MENU, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_SAVE, Set.of("Save"), true, OPTION_SAVE, null));
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_EXIT, Set.of("Exit"), true, OPTION_EXIT, null));
         final var selectMenu = new OptionSelectionMenu<>("Wählen sie ihre Option.", optionList);

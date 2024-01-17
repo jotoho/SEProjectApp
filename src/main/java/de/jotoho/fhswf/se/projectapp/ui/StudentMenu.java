@@ -64,6 +64,9 @@ public final class StudentMenu {
                 Database.getStudent(getMatrikelnummer(new Scanner(System.in))).ifPresent(StudentEditMenu::listStudent);
                 studentMenu();
             }
+            case OPTION_CREATE_STUDENT -> {
+                Database.addStudent(createStudentMenu());
+            }
             case BACK -> startMenu();
             default -> {
                 System.out.print(option + ": Haben wir nich");
@@ -88,7 +91,7 @@ public final class StudentMenu {
         studentMenu();
     }
 
-    public static void createStudentMenu() {
+    public static Student createStudentMenu() {
         System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
         long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
         if (Database.checkIfStudentExists(matrikelnummer)) {
@@ -97,11 +100,10 @@ public final class StudentMenu {
         }
         final Student newStudent = new Student(matrikelnummer, DUMMY_FIRSTNAME, DUMMY_LASTNAME);
         StudentEditMenu.editStudent(newStudent);
-        if (newStudent.getFirstName().equals(DUMMY_FIRSTNAME) || newStudent.getFamilyName().equals(DUMMY_LASTNAME)) {
+        while (newStudent.getFirstName().equals(DUMMY_FIRSTNAME) || newStudent.getFamilyName().equals(DUMMY_LASTNAME)) {
             System.out.print("Bitte die Einträge mit " + DUMMY_FIRSTNAME + " oder " + DUMMY_LASTNAME + " ändern!");
             StudentEditMenu.editStudent(newStudent);
         }
-        Database.addStudent(newStudent);
-        studentMenu();
+        return newStudent;
     }
 }
