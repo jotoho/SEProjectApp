@@ -46,10 +46,10 @@ public final class UnternehmenList {
     public static void main(final String[] args) {
         final Random rng = new Random();
         final var orgs = new HashSet<Unternehmen>();
-        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization A"));
-        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization B"));
-        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization C"));
-        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization D"));
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization A","Teststraße.1"));
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization B","Teststraße.2"));
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization C","Teststraße.3"));
+        orgs.add(new Unternehmen(rng.nextInt(1_000_000), "Organization D","Teststraße.4"));
         System.out.println(getFormatted(orgs));
     }
 }

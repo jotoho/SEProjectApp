@@ -14,6 +14,8 @@ public class Unternehmen {
     private final long unternehmenID;
     private String name;
 
+    private String address;
+
     public static Optional<Unternehmen> getInstanceRef(final long unternehmenID) {
         return Optional.ofNullable(
                 knownInstances.getOrDefault(unternehmenID,
@@ -29,12 +31,24 @@ public class Unternehmen {
         return this.name;
     }
 
+    public String getAddress(){
+        return this.address;
+    }
+
     public void setName(final String name) {
         requireNonNull(name);
         if (name.isBlank())
             throw new IllegalArgumentException();
         else
             this.name = name.strip();
+    }
+
+    public void setAddress(final String address){
+        requireNonNull(address);
+        if (address.isBlank())
+            throw new IllegalArgumentException();
+        else
+            this.address = address.strip();
     }
 
     public static void flushDeadInstanceRecords() {
@@ -47,9 +61,11 @@ public class Unternehmen {
     }
 
     public Unternehmen(final long unternehmenID,
-                       final String name) {
+                       final String name,
+                       final String address) {
         this.unternehmenID = unternehmenID;
         this.setName(name);
+        this.setAddress(address);
 
         final var instance = this;
         Thread.ofVirtual().start(Projekt::flushDeadInstanceRecords);
