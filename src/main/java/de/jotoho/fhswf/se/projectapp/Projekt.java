@@ -22,16 +22,16 @@ public class Projekt {
     private static final Pattern regexTitle = Pattern.compile("^[ \\x21-\\x7Eäöüß]{3,50}$",
                                                               Pattern.CASE_INSENSITIVE);
     @NotNull
-    private static final Pattern regexContext = Pattern.compile("^.{1,1000}$",
+    private static final Pattern regexContext = Pattern.compile("^(.|\\s){1,1000}$",
                                                                 Pattern.CASE_INSENSITIVE);
     @NotNull
-    private static final Pattern regexTextOutline = Pattern.compile("^.{1,1000}$",
+    private static final Pattern regexTextOutline = Pattern.compile("^(.|\\s){1,1000}$",
                                                                     Pattern.CASE_INSENSITIVE);
     @NotNull
-    private static final Pattern regexDescription = Pattern.compile("^.{1,5000}$",
+    private static final Pattern regexDescription = Pattern.compile("^(.|\\s){1,5000}$",
                                                                     Pattern.CASE_INSENSITIVE);
     @NotNull
-    private static final Pattern regexFeedback = Pattern.compile("^.{1,1000}$",
+    private static final Pattern regexFeedback = Pattern.compile("^(.|\\s){1,1000}$",
                                                                  Pattern.CASE_INSENSITIVE);
 
     @NotNull
@@ -181,7 +181,7 @@ public class Projekt {
             throw new IllegalStateException("Attempted to exceed max number of project members");
     }
 
-    public synchronized void removeMembers(@NotNull final Student student) {
+    public synchronized void removeMember(@NotNull final Student student) {
         requireNonNull(student);
         this.members.remove(student);
     }

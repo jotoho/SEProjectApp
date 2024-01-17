@@ -88,4 +88,9 @@ public class Ansprechpartner {
         if (knownInstances.get(ansprechpartnerID).get() != this)
             throw new IllegalStateException();
     }
+
+    @Override
+    public String toString() {
+        return this.firstName + " " + this.familyName + " (" + this.organization.getName() + ")";
+    }
 }
