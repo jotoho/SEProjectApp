@@ -255,6 +255,14 @@ public class ProjektEditMenu {
                 else
                     System.err.println("Projekt is not suitable for review.");
             }
+            case FEEDBACK -> {
+                System.out.println("Geben Sie bitte Ihr neues Feedback ein. (ENDE zum stoppen)");
+                final var input = getTextBlock("ENDE");
+                if (Projekt.validateFeedback(input))
+                    projekt.setFeedback(input);
+                else
+                    System.err.println("Eingabe für Projektfeedback ist ungültig.");
+            }
         }
     }
 
@@ -266,6 +274,7 @@ public class ProjektEditMenu {
         ADD_STUDENTS,
         REMOVE_STUDENTS,
         CONTACTPERSON,
-        STATUS
+        STATUS,
+        FEEDBACK
     }
 }
