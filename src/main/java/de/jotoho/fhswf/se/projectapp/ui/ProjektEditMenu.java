@@ -208,7 +208,7 @@ public class ProjektEditMenu {
                                                      Set.of("neu"),
                                                      false,
                                                      null,
-                                                     ProjektEditMenu::createStudentWizard));
+                                                     StudentMenu::createStudentMenu));
                 studentSelect.addOption(new Option<>("Abbrechen",
                                                      Set.of("abbrechen", "abbruch"),
                                                      false,
@@ -248,7 +248,6 @@ public class ProjektEditMenu {
                     projekt.removeMember(student);
             }
             case CONTACTPERSON -> {
-
             }
             case STATUS -> {
                 if (projekt.isSubmittable())
@@ -257,11 +256,6 @@ public class ProjektEditMenu {
                     System.err.println("Projekt is not suitable for review.");
             }
         }
-    }
-
-    // TODO Implement on-the-fly student creation
-    private static Student createStudentWizard() {
-        return null;
     }
 
     public enum AttributeSelector {
