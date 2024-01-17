@@ -64,8 +64,8 @@ public final class AnsprechpartnerList {
     public static void main(final String[] args) {
         final Random rng = new Random();
         final var contacts = new HashSet<Ansprechpartner>();
-        final var orgA = new Unternehmen(rng.nextInt(1_000_000), "OrgA");
-        final var orgB = new Unternehmen(rng.nextInt(1_000_000), "OrgB");
+        final var orgA = new Unternehmen(rng.nextInt(1_000_000), "OrgA","Teststraße.19");
+        final var orgB = new Unternehmen(rng.nextInt(1_000_000), "OrgB","Teststraße.12");
         final var personA =
                 new Ansprechpartner(rng.nextInt(1_000_000),
                                     "Max",

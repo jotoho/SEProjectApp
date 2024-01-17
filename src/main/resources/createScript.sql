@@ -7,7 +7,8 @@ create table if not exists Student(
 #
 create table if not exists Unternehmen(
     U_ID int primary key,
-    Name varchar(100) not null
+    Name varchar(100) not null,
+    Adresse varchar(100) not null
 )
 #
 create table if not exists Ansprechpartner(
