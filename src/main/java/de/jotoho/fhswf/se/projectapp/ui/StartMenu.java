@@ -6,6 +6,7 @@ import de.jotoho.fhswf.se.projectapp.database.Database;
 import java.util.*;
 
 import static de.jotoho.fhswf.se.projectapp.ui.StudentMenu.*;
+import static de.jotoho.fhswf.se.projectapp.ui.UnternehmenMenu.unternehmenMenu;
 
 @SuppressWarnings("unused")
 public final class StartMenu {
@@ -68,6 +69,7 @@ public final class StartMenu {
 
 
         switch (option){
+            case UNTERNEHMEN_MENU -> unternehmenMenu();
             case STUDENT_MENU -> studentMenu();
             case OPTION_SAVE -> {
                 Database.saveStudents();

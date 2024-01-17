@@ -65,7 +65,7 @@ public final class StudentMenu {
                 studentMenu();
             }
             case OPTION_CREATE_STUDENT -> {
-                Database.addStudent(createStudentMenu());
+                createStudentMenu();
             }
             case BACK -> startMenu();
             default -> {
@@ -104,6 +104,7 @@ public final class StudentMenu {
             System.out.print("Bitte die Einträge mit " + DUMMY_FIRSTNAME + " oder " + DUMMY_LASTNAME + " ändern!");
             StudentEditMenu.editStudent(newStudent);
         }
+        Database.addStudent(newStudent);
         return newStudent;
     }
 }

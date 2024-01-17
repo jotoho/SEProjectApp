@@ -18,6 +18,7 @@ public final class Database {
     private static final String PATH_TO_DATABASE_FILE = "jdbc:sqlite:" + PATH_TO_DATABASE_DIR + '/' + FILE_NAME;
     private static final Path createScriptPath = Path.of("src/main/resources/createScript.sql");
     private static final  Set<Student> loadedStudents = new HashSet<>();
+    private static final  Set<Unternehmen> loadedUnternehmen = new HashSet<>();
 
     public static void initDatabase() {
         createNewDirectory();
@@ -69,6 +70,9 @@ public final class Database {
 
     public static Set<Student> getStudents() {
         return Collections.unmodifiableSet(loadedStudents);
+    }
+    public static Set<Unternehmen> getUnternehmen() {
+        return Collections.unmodifiableSet(loadedUnternehmen);
     }
 
     private static Set<Long> getStudentIDsFromDatabase() {
@@ -122,6 +126,15 @@ public final class Database {
         return matchingStudent;
     }
 
+    public static Optional<Unternehmen> getUnternehmen(final long id){
+        Optional<Unternehmen> matchingUnternehmen = Optional.empty();
+        for (final Unternehmen unternehmen : loadedUnternehmen) {
+            if (unternehmen.getID() == id)
+                matchingUnternehmen = Optional.of(unternehmen);
+        }
+        return matchingUnternehmen;
+    }
+
     @SuppressWarnings("unused")
     public static void addStudent(final Student student) {
         loadedStudents.add(student);
@@ -130,6 +143,15 @@ public final class Database {
     @SuppressWarnings("unused")
     public static void removeStudent(final Student student) {
         loadedStudents.remove(student);
+    }
+
+    public static void addUnternehmen(final Unternehmen unternehmen) {
+        loadedUnternehmen.add(unternehmen);
+    }
+
+    @SuppressWarnings("unused")
+    public static void removeUnternehmen(final Unternehmen unternehmen) {
+        loadedUnternehmen.remove(unternehmen);
     }
 
     @SuppressWarnings("unused")
