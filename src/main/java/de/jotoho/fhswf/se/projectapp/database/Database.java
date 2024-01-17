@@ -18,6 +18,10 @@ public final class Database {
     private static final String PATH_TO_DATABASE_FILE = "jdbc:sqlite:" + PATH_TO_DATABASE_DIR + '/' + FILE_NAME;
     private static final Path createScriptPath = Path.of("src/main/resources/createScript.sql");
     private static final  Set<Student> loadedStudents = new HashSet<>();
+    private static final  Set<Unternehmen> loadedUnternehmen = new HashSet<>();
+    private static final Set<Ansprechpartner> loadedAnsprechpartner = new HashSet<>();
+
+    private static final Set<Projekt> loadedProjekte = new HashSet<>();
 
     public static void initDatabase() {
         createNewDirectory();
@@ -69,6 +73,17 @@ public final class Database {
 
     public static Set<Student> getStudents() {
         return Collections.unmodifiableSet(loadedStudents);
+    }
+    public static Set<Unternehmen> getUnternehmen() {
+        return Collections.unmodifiableSet(loadedUnternehmen);
+    }
+
+    public static Set<Ansprechpartner> getAnsprechpartner() {
+        return Collections.unmodifiableSet(loadedAnsprechpartner);
+    }
+
+    public static Set<Projekt> getProjekte() {
+        return Collections.unmodifiableSet(loadedProjekte);
     }
 
     private static Set<Long> getStudentIDsFromDatabase() {
@@ -122,6 +137,24 @@ public final class Database {
         return matchingStudent;
     }
 
+    public static Optional<Unternehmen> getUnternehmen(final long id){
+        Optional<Unternehmen> matchingUnternehmen = Optional.empty();
+        for (final Unternehmen unternehmen : loadedUnternehmen) {
+            if (unternehmen.getID() == id)
+                matchingUnternehmen = Optional.of(unternehmen);
+        }
+        return matchingUnternehmen;
+    }
+
+    public static Optional<Ansprechpartner> getAnsprechpartner(final long id){
+        Optional<Ansprechpartner> matchingAnsprechpartner = Optional.empty();
+        for (final Ansprechpartner ansprechpartner : loadedAnsprechpartner) {
+            if (ansprechpartner.getID() == id)
+                matchingAnsprechpartner = Optional.of(ansprechpartner);
+        }
+        return matchingAnsprechpartner;
+    }
+
     @SuppressWarnings("unused")
     public static void addStudent(final Student student) {
         loadedStudents.add(student);
@@ -130,6 +163,34 @@ public final class Database {
     @SuppressWarnings("unused")
     public static void removeStudent(final Student student) {
         loadedStudents.remove(student);
+    }
+
+    public static void addAnsprechpartner(final Ansprechpartner ansprechpartner) {
+        loadedAnsprechpartner.add(ansprechpartner);
+    }
+
+    @SuppressWarnings("unused")
+    public static void removeAnsprechpartner(final Ansprechpartner ansprechpartner) {
+        if(loadedProjekte   .stream()
+                            .map(Projekt::getContact)
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .anyMatch(ansprechpartner::equals))
+            System.err.println("Contact still in use!");
+        else
+            loadedAnsprechpartner.remove(ansprechpartner);
+    }
+
+    public static void addUnternehmen(final Unternehmen unternehmen) {
+        loadedUnternehmen.add(unternehmen);
+    }
+
+    @SuppressWarnings("unused")
+    public static void removeUnternehmen(final Unternehmen unternehmen) {
+        if(loadedAnsprechpartner.stream().map(Ansprechpartner::getOrganization).anyMatch(unternehmen::equals))
+            System.err.println("Organization still in use!");
+        else
+            loadedUnternehmen.remove(unternehmen);
     }
 
     @SuppressWarnings("unused")
