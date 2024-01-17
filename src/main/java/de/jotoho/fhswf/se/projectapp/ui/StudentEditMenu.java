@@ -2,10 +2,10 @@ package de.jotoho.fhswf.se.projectapp.ui;
 
 import de.jotoho.fhswf.se.projectapp.Student;
 import de.jotoho.fhswf.se.projectapp.ui.OptionSelectionMenu.Option;
+import static de.jotoho.fhswf.se.projectapp.ui.TerminalInputUtil.getNextLine;
 import static java.util.Objects.*;
 
 import java.io.PrintStream;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
@@ -32,26 +32,11 @@ public final class StudentEditMenu {
     private StudentEditMenu() {
     }
 
-    public static void listStudent(final Student student) {
-        System.out.println("== Studenteninformation ==");
-        System.out.print("Matrikelnummer: ");
-        System.out.println(student.getStudentID());
-        System.out.print("Nachname: ");
-        System.out.println(student.getFamilyName());
-        System.out.print("Vorname: ");
-        System.out.println(student.getFirstName());
-        System.out.print("Emailadresse: ");
-        System.out.println(student.getEmailAddr().orElse("nicht vorhanden"));
-    }
-
-    /**
-     * For API backwards-compatibility only.
-     * @deprecated
-     * */
-    @Deprecated(forRemoval = true)
-    public static void listStudent(final Student student,
-                                   final PrintStream unused) {
-        listStudent(student);
+    public static void main(final String[] args) {
+        final var student =
+                new Student(30271232, "Jonas Tobias", "Hopusch", "hopusch.jonastobias@fh-swf.de");
+        StudentEditMenu.editStudent(student);
+        StudentEditMenu.listStudent(student, System.out);
     }
 
     public static void editStudent(final Student student) {
@@ -89,8 +74,31 @@ public final class StudentEditMenu {
         }
     }
 
+    /**
+     * For API backwards-compatibility only.
+     *
+     * @deprecated
+     */
+    @Deprecated(forRemoval = true)
+    public static void listStudent(final Student student, final PrintStream unused) {
+        listStudent(student);
+    }
+
+    public static void listStudent(final Student student) {
+        System.out.println("== Studenteninformation ==");
+        System.out.print("Matrikelnummer: ");
+        System.out.println(student.getStudentID());
+        System.out.print("Nachname: ");
+        System.out.println(student.getFamilyName());
+        System.out.print("Vorname: ");
+        System.out.println(student.getFirstName());
+        System.out.print("Emailadresse: ");
+        System.out.println(student.getEmailAddr().orElse("nicht vorhanden"));
+    }
+
     public static void editStudentAttribute(final Student student,
-                                            final AttributeSelector attribute) {
+                                            final AttributeSelector attribute)
+    {
         requireNonNull(student);
         requireNonNull(attribute);
         final var scanner = new Scanner(System.in);
@@ -103,18 +111,7 @@ public final class StudentEditMenu {
                 while (isNull(newName) || newName.isBlank() ||
                        !familyNamePattern.matcher(newName).matches()) {
                     System.out.print("Neuer Nachname: ");
-                    while (!scanner.hasNextLine()) {
-                        // Do nothing but wait
-                        try {
-                            Thread.sleep(Duration.ofSeconds(1));
-                        } catch (final InterruptedException ie) {
-                            break;
-                        }
-                    }
-                    final var line = scanner.nextLine();
-                    if (nonNull(line)) {
-                        newName = line.strip();
-                    }
+                    newName = getNextLine().orElse(null);
                 }
                 student.setFamilyName(newName);
             }
@@ -126,19 +123,7 @@ public final class StudentEditMenu {
                 while (isNull(newName) || newName.isBlank() ||
                        !firstNamePattern.matcher(newName).matches()) {
                     System.out.print("Neuer Vorname: ");
-                    while (!scanner.hasNextLine()) {
-                        // Do nothing but wait
-                        try {
-                            Thread.sleep(Duration.ofSeconds(1));
-                        }
-                        catch (final InterruptedException ie) {
-                            break;
-                        }
-                    }
-                    final var line = scanner.nextLine();
-                    if (nonNull(line)) {
-                        newName = line.strip();
-                    }
+                    newName = getNextLine().orElse(null);
                 }
                 student.setFirstName(newName);
             }
@@ -150,24 +135,11 @@ public final class StudentEditMenu {
                 while (isNull(newName) || newName.isBlank() || newName.length() > 90 ||
                        !emailPattern.matcher(newName).matches()) {
                     System.out.print("Neue Email: ");
-                    while (!scanner.hasNextLine()) {
-                        // Do nothing but wait
-                        try {
-                            Thread.sleep(Duration.ofSeconds(1));
-                        }
-                        catch (final InterruptedException ie) {
-                            break;
-                        }
-                    }
-                    final var line = scanner.nextLine();
-                    if (isNull(line)) {
-                        continue;
-                    }
-                    else if (line.isBlank()) {
+                    newName = getNextLine().orElse(null);
+                    if (nonNull(newName) && newName.isBlank()) {
                         student.setEmail(null);
                         return;
                     }
-                    newName = line.strip();
                 }
                 student.setEmail(newName);
             }
@@ -175,13 +147,8 @@ public final class StudentEditMenu {
     }
 
     public enum AttributeSelector {
-        FAMILY_NAME, FIRST_NAME, EMAIL
-    }
-
-    public static void main(final String[] args) {
-        final var student =
-                new Student(30271232, "Jonas Tobias", "Hopusch", "hopusch.jonastobias@fh-swf.de");
-        StudentEditMenu.editStudent(student);
-        StudentEditMenu.listStudent(student, System.out);
+        FAMILY_NAME,
+        FIRST_NAME,
+        EMAIL
     }
 }

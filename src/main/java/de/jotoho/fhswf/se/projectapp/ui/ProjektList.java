@@ -77,8 +77,10 @@ public final class ProjektList {
         p0.addMember(s1);
         final var p1 = new Projekt(1);
         p1.setTitle("Test project #2");
+        p1.addMember(s0);
         final var p2 = new Projekt(2);
         p2.setTitle("Test project #3");
+        p2.addMember(s1);
         final Set<Projekt> projects = Set.of(p0, p1, p2);
         System.out.println(getFormatted(projects));
     }

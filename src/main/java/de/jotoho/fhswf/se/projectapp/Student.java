@@ -116,4 +116,12 @@ public class Student {
              familyName,
              null);
     }
+
+    @Override
+    public String toString() {
+        final var emailDisplay = this.emailAddr.map(s -> " <" + s + ">")
+                                               .orElse("");
+        return this.firstName + " " +
+               this.familyName + emailDisplay;
+    }
 }
