@@ -21,6 +21,8 @@ public final class Database {
     private static final  Set<Unternehmen> loadedUnternehmen = new HashSet<>();
     private static final Set<Ansprechpartner> loadedAnsprechpartner = new HashSet<>();
 
+    private static final Set<Projekt> loadedProjekte = new HashSet<>();
+
     public static void initDatabase() {
         createNewDirectory();
         createNewDatabaseFile();
@@ -78,6 +80,10 @@ public final class Database {
 
     public static Set<Ansprechpartner> getAnsprechpartner() {
         return Collections.unmodifiableSet(loadedAnsprechpartner);
+    }
+
+    public static Set<Projekt> getProjekte() {
+        return Collections.unmodifiableSet(loadedProjekte);
     }
 
     private static Set<Long> getStudentIDsFromDatabase() {
@@ -165,7 +171,14 @@ public final class Database {
 
     @SuppressWarnings("unused")
     public static void removeAnsprechpartner(final Ansprechpartner ansprechpartner) {
-        loadedAnsprechpartner.remove(ansprechpartner);
+        if(loadedProjekte   .stream()
+                            .map(Projekt::getContact)
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .anyMatch(ansprechpartner::equals))
+            System.err.println("Contact still in use!");
+        else
+            loadedAnsprechpartner.remove(ansprechpartner);
     }
 
     public static void addUnternehmen(final Unternehmen unternehmen) {
@@ -174,7 +187,10 @@ public final class Database {
 
     @SuppressWarnings("unused")
     public static void removeUnternehmen(final Unternehmen unternehmen) {
-        loadedUnternehmen.remove(unternehmen);
+        if(loadedAnsprechpartner.stream().map(Ansprechpartner::getOrganization).anyMatch(unternehmen::equals))
+            System.err.println("Organization still in use!");
+        else
+            loadedUnternehmen.remove(unternehmen);
     }
 
     @SuppressWarnings("unused")
