@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class Projekt {
     private static final int MAX_MEMBERS = 3;
     @NotNull
-    private static final Pattern regexTitle = Pattern.compile("^[a-z0-9äöüß/\\\\\\-]{3,50}$",
+    private static final Pattern regexTitle = Pattern.compile("^[ \\x21-\\x7Eäöüß]{3,50}$",
                                                               Pattern.CASE_INSENSITIVE);
     @NotNull
     private static final Pattern regexContext = Pattern.compile("^.{1,1000}$",
@@ -211,6 +211,8 @@ public class Projekt {
         if (!doValidate || validateTitle(strippedVal)) {
             this.title = strippedVal;
         }
+        else
+            throw new IllegalArgumentException();
     }
 
     @NotNull
@@ -230,6 +232,8 @@ public class Projekt {
         if (!doValidate || validateTextOutline(strippedVal)) {
             this.textOutline = strippedVal;
         }
+        else
+            throw new IllegalArgumentException();
     }
 
     @NotNull
@@ -247,6 +251,8 @@ public class Projekt {
         if (!doValidate || validateContext(strippedVal)) {
             this.context = strippedVal;
         }
+        else
+            throw new IllegalArgumentException();
     }
 
     public synchronized void setDescription(@NotNull final String description,
@@ -257,6 +263,8 @@ public class Projekt {
         if (!doValidate || validateDescription(strippedVal)) {
             this.description = strippedVal;
         }
+        else
+            throw new IllegalArgumentException();
     }
 
     @NotNull
@@ -284,6 +292,8 @@ public class Projekt {
         if (!doValidate || validateFeedback(strippedVal)) {
             this.feedback = strippedVal;
         }
+        else
+            throw new IllegalArgumentException();
     }
 
     public synchronized void setFeedback(@NotNull final String feedback) {
