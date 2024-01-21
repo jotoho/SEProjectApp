@@ -1,19 +1,47 @@
 package de.jotoho.fhswf.se.projectapp;
 
-import de.jotoho.fhswf.se.projectapp.database.Database;
-import de.jotoho.fhswf.se.projectapp.ui.StartMenu;
-
-import static de.jotoho.fhswf.se.projectapp.ui.UnternehmenMenu.getFreeID;
+import de.jotoho.fhswf.se.projectapp.backend.database.*;
+import de.jotoho.fhswf.se.projectapp.ui.menu.StartMenu;
 
 public class Main {
     public static void main(String[] args){
         Database.initDatabase();
-        final Unternehmen test1 = new Unternehmen(getFreeID(),"Test 1","Teststraße.1");
-        Database.addUnternehmen(test1);
-        final Unternehmen test2 = new Unternehmen(getFreeID(),"Test 2","Teststraße.2");
-        Database.addUnternehmen(test2);
-        final Unternehmen test3 = new Unternehmen(getFreeID(),"Test 3","Teststraße.3");
-        Database.addUnternehmen(test3);
+        /*
+        final Student student = new Student(123456,"Tim","Beckmann");
+        final Unternehmen unternehmen = new Unternehmen(UnternehmenDatabase.getFreeID(),"FHSWF","Iserlohn");
+        final Ansprechpartner ansprechpartner = new Ansprechpartner(AnsprechpartnerDatabase.getFreeID(),"Jonas","Hopush",unternehmen);
+        final Projekt projekt = new Projekt(ProjektDatabase.getFreeID());
+
+        projekt.setContact(ansprechpartner);
+        projekt.setTitle("Test");
+        projekt.setDescription("Beschreibung");
+        projekt.setContext("Kontext");
+        projekt.setTextOutline("Outline");
+        projekt.setFeedback("Feedback");
+        projekt.addMember(student);
+        
+        StudentDatabase.addStudent(student);
+        UnternehmenDatabase.addUnternehmen(unternehmen);
+        AnsprechpartnerDatabase.addAnsprechpartner(ansprechpartner);
+        ProjektDatabase.addProjekt(projekt);
+        Database.save();
+
+
+        student.setFirstName("Timm");
+        student.setEmail("test@fhswf.de");
+
+        unternehmen.setName("FH-SWF");
+
+        ansprechpartner.setFirstName("Jonas Tobias");
+
+        projekt.setTitle("Update Test");
+
+        final Student student2 = new Student(9874986,"Tom","Beckfrau","beckfrau@fh-swf.de");
+        StudentDatabase.addStudent(student2);
+        projekt.addMember(student2);
+
+        Database.save();
+        */
         StartMenu.startMenu();
     }
 }

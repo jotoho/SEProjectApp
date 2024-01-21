@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public class Projekt {
-    private static final int MAX_MEMBERS = 3;
+    public static final int MAX_MEMBERS = 3;
     @NotNull
     private static final Pattern regexTitle = Pattern.compile("^[ \\x21-\\x7Eäöüß]{3,50}$",
                                                               Pattern.CASE_INSENSITIVE);

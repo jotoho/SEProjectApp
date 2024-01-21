@@ -1,7 +1,8 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.editmenu;
 
 import de.jotoho.fhswf.se.projectapp.Ansprechpartner;
 import de.jotoho.fhswf.se.projectapp.Unternehmen;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu;
 
 import java.time.Duration;
 import java.util.ArrayList;

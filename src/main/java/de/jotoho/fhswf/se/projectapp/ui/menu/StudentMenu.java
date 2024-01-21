@@ -1,11 +1,13 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.menu;
 
 import de.jotoho.fhswf.se.projectapp.Student;
-import de.jotoho.fhswf.se.projectapp.database.Database;
+import de.jotoho.fhswf.se.projectapp.backend.database.StudentDatabase;
+import de.jotoho.fhswf.se.projectapp.ui.editmenu.StudentEditMenu;
+import de.jotoho.fhswf.se.projectapp.ui.list.StudentList;
 
 import java.util.*;
 
-import static de.jotoho.fhswf.se.projectapp.ui.StartMenu.startMenu;
+import static de.jotoho.fhswf.se.projectapp.ui.menu.StartMenu.startMenu;
 
 @SuppressWarnings("unused")
 public final class StudentMenu {
@@ -40,7 +42,7 @@ public final class StudentMenu {
         optionList.add(new OptionSelectionMenu.Option<>(OPTION_DELETE_STUDENT, Set.of("Delete"), true, OPTION_DELETE_STUDENT, null));
         optionList.add(new OptionSelectionMenu.Option<>(BACK, Set.of("Back"), true, BACK, null));
 
-        final var selectMenu = new OptionSelectionMenu<>("Wählen sie ihre Option.", optionList);
+        final var selectMenu = new OptionSelectionMenu<>("Studentenmenü", optionList);
 
         selectMenu.activate();
 
@@ -49,19 +51,19 @@ public final class StudentMenu {
 
         switch (option) {
             case OPTION_SHOW_STUDENTS -> {
-                System.out.println(StudentList.getFormattedStudentList(Database.getStudents()));
+                System.out.println(StudentList.getFormattedStudentList(StudentDatabase.getStudents()));
                 studentMenu();
             }
             case OPTION_EDIT_STUDENT -> {
                 System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
-                Database.getStudent(getMatrikelnummer(new Scanner(System.in))).ifPresent(StudentEditMenu::editStudent);
+                StudentDatabase.getStudent(getMatrikelnummer(new Scanner(System.in))).ifPresent(StudentEditMenu::editStudent);
                 studentMenu();
             }
             case OPTION_DELETE_STUDENT -> deleteStudentMenu();
 
             case OPTION_SHOW_STUDENT -> {
                 System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
-                Database.getStudent(getMatrikelnummer(new Scanner(System.in))).ifPresent(StudentEditMenu::listStudent);
+                StudentDatabase.getStudent(getMatrikelnummer(new Scanner(System.in))).ifPresent(StudentEditMenu::listStudent);
                 studentMenu();
             }
             case OPTION_CREATE_STUDENT -> {
@@ -78,7 +80,7 @@ public final class StudentMenu {
     public static void deleteStudentMenu() {
         System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
         final long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
-        final Optional<Student> student = Database.getStudent(matrikelnummer);
+        final Optional<Student> student = StudentDatabase.getStudent(matrikelnummer);
         if (student.isEmpty()) {
             System.out.print("Kein Student mit dieser Matrikelnummer vorhanden!");
             studentMenu();
@@ -87,14 +89,14 @@ public final class StudentMenu {
         System.out.print("Wirklich löschen?[Y/N]");
         if (!new Scanner(System.in).next().equals("Y"))
             studentMenu();
-        student.ifPresent(Database::removeStudent);
+        student.ifPresent(StudentDatabase::removeStudent);
         studentMenu();
     }
 
     public static Student createStudentMenu() {
         System.out.print("Bitte Matrikelnummer des Studenten eingeben: ");
         long matrikelnummer = getMatrikelnummer(new Scanner(System.in));
-        if (Database.checkIfStudentExists(matrikelnummer)) {
+        if (StudentDatabase.checkIfStudentExists(matrikelnummer)) {
             System.out.print("Matrikelnummer wird bereits verwendet!");
             return null;
         }
@@ -104,7 +106,7 @@ public final class StudentMenu {
             System.out.print("Bitte die Einträge mit " + DUMMY_FIRSTNAME + " oder " + DUMMY_LASTNAME + " ändern!");
             StudentEditMenu.editStudent(newStudent);
         }
-        Database.addStudent(newStudent);
+        StudentDatabase.addStudent(newStudent);
         return newStudent;
     }
 }

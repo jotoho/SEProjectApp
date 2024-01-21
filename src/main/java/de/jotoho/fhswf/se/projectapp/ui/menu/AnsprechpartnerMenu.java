@@ -1,13 +1,15 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.menu;
 
 import de.jotoho.fhswf.se.projectapp.Ansprechpartner;
-import de.jotoho.fhswf.se.projectapp.Unternehmen;
-import de.jotoho.fhswf.se.projectapp.database.Database;
+import de.jotoho.fhswf.se.projectapp.backend.database.AnsprechpartnerDatabase;
+import de.jotoho.fhswf.se.projectapp.ui.editmenu.AnsprechpartnerEditMenu;
+import de.jotoho.fhswf.se.projectapp.ui.list.AnsprechpartnerList;
 
 import java.util.*;
 
-import static de.jotoho.fhswf.se.projectapp.ui.StartMenu.startMenu;
-import static de.jotoho.fhswf.se.projectapp.ui.UnternehmenMenu.createUnternehmen;
+import static de.jotoho.fhswf.se.projectapp.backend.database.Database.getIDFromInput;
+import static de.jotoho.fhswf.se.projectapp.ui.menu.StartMenu.startMenu;
+import static de.jotoho.fhswf.se.projectapp.ui.menu.UnternehmenMenu.createUnternehmen;
 
 public final class AnsprechpartnerMenu {
     private static final String PLACEHOLDER = "Platzhalter";
@@ -19,27 +21,7 @@ public final class AnsprechpartnerMenu {
     private static final String BACK = "Zurück";
 
     private AnsprechpartnerMenu(){}
-    
-    public static long getFreeID(){
-        long id;
-        boolean freeID = false;
-        do{
-            id = new Random().nextInt(1000);
-            if(Unternehmen.getInstanceRef(id).isEmpty())
-                freeID = true;
-        }while(!freeID);
-        return id;
-    }
 
-    public static long getID(final Scanner scanner) {
-        try {
-            return scanner.nextLong();
-        } catch (final Exception InputMismatchException) {
-            scanner.next();
-            System.out.print("ID hat das falsche Formart! Bitte erneut eingeben: ");
-            return getID(scanner);
-        }
-    }
 
 
     public static void ansprechpartnerMenu(){
@@ -53,7 +35,7 @@ public final class AnsprechpartnerMenu {
         optionList.add(new OptionSelectionMenu.Option<>(BACK, Set.of("Back"), true, BACK, null));
 
 
-        final var selectMenu = new OptionSelectionMenu<>("Wählen sie ihre Option.", optionList);
+        final var selectMenu = new OptionSelectionMenu<>("Ansprechpartnermenü", optionList);
         selectMenu.activate();
 
         final String option = selectMenu.getSelectedOption()
@@ -61,49 +43,49 @@ public final class AnsprechpartnerMenu {
 
         switch (option) {
             case OPTION_SHOW_ANSPRECHPARTNER -> {
-                System.out.println(AnsprechpartnerList.getFormatted(Database.getAnsprechpartner()));
+                System.out.println(AnsprechpartnerList.getFormatted(AnsprechpartnerDatabase.getAnsprechpartner()));
                 ansprechpartnerMenu();
             }
             case OPTION_SHOW_ONE_ANSPRECHPARTNER -> {
                 System.out.print("Bitte ID des Ansprechpartner eingeben: ");
-                Database.getAnsprechpartner(getID(new Scanner(System.in))).ifPresent(AnsprechpartnerEditMenu::listAnsprechpartner);
+                AnsprechpartnerDatabase.getAnsprechpartner(getIDFromInput(new Scanner(System.in))).ifPresent(AnsprechpartnerEditMenu::listAnsprechpartner);
                 ansprechpartnerMenu();
             }
             case OPTION_EDIT_ANSPRECHPARTNER -> {
                 System.out.print("Bitte ID des Ansprechpartner eingeben: ");
-                Database.getAnsprechpartner(getID(new Scanner(System.in))).ifPresent(AnsprechpartnerEditMenu::editAnsprechpartner);
+                AnsprechpartnerDatabase.getAnsprechpartner(getIDFromInput(new Scanner(System.in))).ifPresent(AnsprechpartnerEditMenu::editAnsprechpartner);
                 ansprechpartnerMenu();
             }
-            case OPTION_CREATE_ANSPRECHPARTNER ->{ createAnsprechpartner();ansprechpartnerMenu();}
-            case OPTION_DELETE_ANSPRECHPARTNER -> {deleteAnsprechpartner();ansprechpartnerMenu();}
+            case OPTION_CREATE_ANSPRECHPARTNER -> { createAnsprechpartner();ansprechpartnerMenu();}
+            case OPTION_DELETE_ANSPRECHPARTNER -> { deleteAnsprechpartner();ansprechpartnerMenu();}
             case BACK -> startMenu();
         }
     }
 
     public static Ansprechpartner createAnsprechpartner(){
-        final Ansprechpartner newAnsprechpartner = new Ansprechpartner(getFreeID(),PLACEHOLDER,PLACEHOLDER,createUnternehmen());
+        final Ansprechpartner newAnsprechpartner = new Ansprechpartner(AnsprechpartnerDatabase.getFreeID(),PLACEHOLDER,PLACEHOLDER, createUnternehmen());
         AnsprechpartnerEditMenu.editAnsprechpartner(newAnsprechpartner);
         while(newAnsprechpartner.getFirstName().equals(PLACEHOLDER) || newAnsprechpartner.getFamilyName().equals(PLACEHOLDER)){
             System.out.print("Bitte die Einträge mit " + PLACEHOLDER + " oder ändern!");
             AnsprechpartnerEditMenu.listAnsprechpartner(newAnsprechpartner);
         }
-        Database.addAnsprechpartner(newAnsprechpartner);
+        AnsprechpartnerDatabase.addAnsprechpartner(newAnsprechpartner);
         return newAnsprechpartner;
     }
 
     public static void deleteAnsprechpartner(){
         System.out.print("Bitte ID des Ansprechpartner eingeben: ");
-        long id = getID(new Scanner(System.in));
-        final Optional<Unternehmen> unternehmen = Database.getUnternehmen(id);
-        if (unternehmen.isEmpty()) {
+        long id = getIDFromInput(new Scanner(System.in));
+        final Optional<Ansprechpartner> ansprechpartner = AnsprechpartnerDatabase.getAnsprechpartner(id);
+        if (ansprechpartner.isEmpty()) {
             System.out.print("Kein Ansprechpartner mit dieser ID vorhanden!");
             ansprechpartnerMenu();
         }
-        unternehmen.ifPresent(UnternehmenEditMenu::listUnternehmen);
+        ansprechpartner.ifPresent(AnsprechpartnerEditMenu::listAnsprechpartner);
         System.out.print("Wirklich löschen?[Y/N]");
         if (!new Scanner(System.in).next().equals("Y"))
             ansprechpartnerMenu();
-        unternehmen.ifPresent(Database::removeUnternehmen);
+        ansprechpartner.ifPresent(AnsprechpartnerDatabase::removeAnsprechpartner);
         ansprechpartnerMenu();
     }
 }

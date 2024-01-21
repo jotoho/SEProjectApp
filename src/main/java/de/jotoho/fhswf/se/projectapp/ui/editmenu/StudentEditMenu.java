@@ -1,7 +1,8 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.editmenu;
 
 import de.jotoho.fhswf.se.projectapp.Student;
-import de.jotoho.fhswf.se.projectapp.ui.OptionSelectionMenu.Option;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu.Option;
 import static de.jotoho.fhswf.se.projectapp.ui.TerminalInputUtil.getNextLine;
 import static java.util.Objects.*;
 

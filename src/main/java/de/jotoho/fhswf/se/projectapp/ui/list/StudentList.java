@@ -1,4 +1,4 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.list;
 
 import de.jotoho.fhswf.se.projectapp.Student;
 import static java.util.Objects.requireNonNull;

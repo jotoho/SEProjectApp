@@ -1,10 +1,11 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.menu;
 
 import de.jotoho.fhswf.se.projectapp.Projekt;
 import de.jotoho.fhswf.se.projectapp.Projekt.Status;
-import de.jotoho.fhswf.se.projectapp.ui.OptionSelectionMenu.Option;
-import de.jotoho.fhswf.se.projectapp.ui.ProjektEditMenu.AttributeSelector;
-import static de.jotoho.fhswf.se.projectapp.ui.ProjektEditMenu.listProjekt;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu.Option;
+import de.jotoho.fhswf.se.projectapp.ui.editmenu.ProjektEditMenu;
+import de.jotoho.fhswf.se.projectapp.ui.editmenu.ProjektEditMenu.AttributeSelector;
+import static de.jotoho.fhswf.se.projectapp.ui.editmenu.ProjektEditMenu.listProjekt;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 

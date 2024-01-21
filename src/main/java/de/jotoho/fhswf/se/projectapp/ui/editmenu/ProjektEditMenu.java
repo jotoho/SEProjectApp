@@ -1,18 +1,22 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.editmenu;
 
 import de.jotoho.fhswf.se.projectapp.Ansprechpartner;
 import de.jotoho.fhswf.se.projectapp.Projekt;
 import de.jotoho.fhswf.se.projectapp.Projekt.Status;
 import de.jotoho.fhswf.se.projectapp.Student;
 import de.jotoho.fhswf.se.projectapp.Unternehmen;
-import de.jotoho.fhswf.se.projectapp.database.Database;
-import de.jotoho.fhswf.se.projectapp.ui.OptionSelectionMenu.Option;
+import de.jotoho.fhswf.se.projectapp.backend.database.StudentDatabase;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu.Option;
 import static de.jotoho.fhswf.se.projectapp.ui.TerminalInputUtil.getTextBlock;
 import static de.jotoho.fhswf.se.projectapp.ui.TextFormatUtil.prepareText;
 import static java.util.Collections.unmodifiableSequencedSet;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Predicate.not;
+
+import de.jotoho.fhswf.se.projectapp.ui.menu.StudentMenu;
+import de.jotoho.fhswf.se.projectapp.ui.TerminalInputUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -73,8 +77,8 @@ public class ProjektEditMenu {
     public static void main(final String[] args) {
         final var s = new Student(3, "Jonas Tobias", "Hopusch", "hopusch.jonastobias@fh-swf.de");
         final var s2 = new Student(2, "Tim", "Beckmann", "beckmann.tim@fh-swf.de");
-        Database.addStudent(s);
-        Database.addStudent(s2);
+        StudentDatabase.addStudent(s);
+        StudentDatabase.addStudent(s2);
         final var o = new Unternehmen(4, "Fachhochschule Südwestfalen", "Iserlohn");
         final var a = new Ansprechpartner(5, "Uwe", "Klug", o);
         final var p = new Projekt(15);
@@ -200,7 +204,7 @@ public class ProjektEditMenu {
                                                          student,
                                                          null));
                 };
-                Database.getStudents()
+                StudentDatabase.getStudents()
                         .stream()
                         .filter(not(projekt.getMemberView()::contains))
                         .forEach(optionAdder);

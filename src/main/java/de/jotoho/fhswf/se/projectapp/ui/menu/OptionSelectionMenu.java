@@ -1,4 +1,4 @@
-package de.jotoho.fhswf.se.projectapp.ui;
+package de.jotoho.fhswf.se.projectapp.ui.menu;
 
 import static java.util.Collections.unmodifiableSequencedSet;
 import static java.util.Objects.nonNull;
