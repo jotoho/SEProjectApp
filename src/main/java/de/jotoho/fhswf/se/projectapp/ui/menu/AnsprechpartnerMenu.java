@@ -67,7 +67,7 @@ public final class AnsprechpartnerMenu {
         AnsprechpartnerEditMenu.editAnsprechpartner(newAnsprechpartner);
         while(newAnsprechpartner.getFirstName().equals(PLACEHOLDER) || newAnsprechpartner.getFamilyName().equals(PLACEHOLDER)){
             System.out.print("Bitte die Einträge mit " + PLACEHOLDER + " oder ändern!");
-            AnsprechpartnerEditMenu.listAnsprechpartner(newAnsprechpartner);
+            AnsprechpartnerEditMenu.editAnsprechpartner(newAnsprechpartner);
         }
         AnsprechpartnerDatabase.addAnsprechpartner(newAnsprechpartner);
         return newAnsprechpartner;
