@@ -5,18 +5,19 @@ import de.jotoho.fhswf.se.projectapp.Projekt;
 import de.jotoho.fhswf.se.projectapp.Projekt.Status;
 import de.jotoho.fhswf.se.projectapp.Student;
 import de.jotoho.fhswf.se.projectapp.Unternehmen;
+import de.jotoho.fhswf.se.projectapp.backend.database.AnsprechpartnerDatabase;
 import de.jotoho.fhswf.se.projectapp.backend.database.StudentDatabase;
-import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu;
-import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu.Option;
+import de.jotoho.fhswf.se.projectapp.ui.TerminalInputUtil;
 import static de.jotoho.fhswf.se.projectapp.ui.TerminalInputUtil.getTextBlock;
 import static de.jotoho.fhswf.se.projectapp.ui.TextFormatUtil.prepareText;
+import de.jotoho.fhswf.se.projectapp.ui.menu.AnsprechpartnerMenu;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu;
+import de.jotoho.fhswf.se.projectapp.ui.menu.OptionSelectionMenu.Option;
+import de.jotoho.fhswf.se.projectapp.ui.menu.StudentMenu;
 import static java.util.Collections.unmodifiableSequencedSet;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Predicate.not;
-
-import de.jotoho.fhswf.se.projectapp.ui.menu.StudentMenu;
-import de.jotoho.fhswf.se.projectapp.ui.TerminalInputUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -50,6 +51,11 @@ public class ProjektEditMenu {
                                   Set.of("beschreibung"),
                                   true,
                                   AttributeSelector.DESCRIPTION,
+                                  null));
+        data.addLast(new Option<>("Ansprechpartner ändern",
+                                  Set.of("contact", "ansprechpartner"),
+                                  true,
+                                  AttributeSelector.CONTACTPERSON,
                                   null));
         data.addLast(new Option<>("Neuen Studenten hinzufügen",
                                   Set.of("weitererstudent"),
@@ -252,6 +258,37 @@ public class ProjektEditMenu {
                     projekt.removeMember(student);
             }
             case CONTACTPERSON -> {
+                final OptionSelectionMenu<Ansprechpartner> contactSelect =
+                        new OptionSelectionMenu<>("Wählen Sie einen Ansprechpartner aus.");
+                final Consumer<Ansprechpartner> optionAdder = contact -> {
+                    contactSelect.addOption(new Option<>(contact.toString(),
+                                                         Set.of(Long.toUnsignedString(contact.getID()),
+                                                                contact.getFamilyName()
+                                                                       .toLowerCase()),
+                                                         false,
+                                                         contact,
+                                                         null));
+                };
+
+                AnsprechpartnerDatabase.getAnsprechpartner()
+                                       .forEach(optionAdder);
+                contactSelect.addOption(new Option<>("Neuer Ansprechpartner",
+                                                     Set.of("neu"),
+                                                     false,
+                                                     null,
+                                                     AnsprechpartnerMenu::createAnsprechpartner));
+                contactSelect.addOption(new Option<>("Abbrechen",
+                                                     Set.of("abbrechen", "abbruch"),
+                                                     false,
+                                                     null,
+                                                     null));
+                contactSelect.activate();
+
+                @Nullable
+                final Ansprechpartner contact =
+                        contactSelect.getSelectedOption().map(Option::get).orElse(null);
+                if (nonNull(contact))
+                    projekt.setContact(contact);
             }
             case STATUS -> {
                 if (projekt.isSubmittable())
