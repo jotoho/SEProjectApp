@@ -1,9 +1,12 @@
 package de.jotoho.fhswf.se.projectapp.ui.menu;
 
 import de.jotoho.fhswf.se.projectapp.Ansprechpartner;
+import de.jotoho.fhswf.se.projectapp.Unternehmen;
 import de.jotoho.fhswf.se.projectapp.backend.database.AnsprechpartnerDatabase;
+import de.jotoho.fhswf.se.projectapp.backend.database.UnternehmenDatabase;
 import de.jotoho.fhswf.se.projectapp.ui.editmenu.AnsprechpartnerEditMenu;
 import de.jotoho.fhswf.se.projectapp.ui.list.AnsprechpartnerList;
+import de.jotoho.fhswf.se.projectapp.ui.list.UnternehmenList;
 
 import java.util.*;
 
@@ -63,7 +66,10 @@ public final class AnsprechpartnerMenu {
     }
 
     public static Ansprechpartner createAnsprechpartner(){
-        final Ansprechpartner newAnsprechpartner = new Ansprechpartner(AnsprechpartnerDatabase.getFreeID(),PLACEHOLDER,PLACEHOLDER, createUnternehmen());
+        final Unternehmen arbeitgeber = pickUnternehmen();
+        if(arbeitgeber == null)
+            return null;
+        final Ansprechpartner newAnsprechpartner = new Ansprechpartner(AnsprechpartnerDatabase.getFreeID(),PLACEHOLDER,PLACEHOLDER,arbeitgeber);
         AnsprechpartnerEditMenu.editAnsprechpartner(newAnsprechpartner);
         while(newAnsprechpartner.getFirstName().equals(PLACEHOLDER) || newAnsprechpartner.getFamilyName().equals(PLACEHOLDER)){
             System.out.print("Bitte die Einträge mit " + PLACEHOLDER + " oder ändern!");
@@ -75,7 +81,7 @@ public final class AnsprechpartnerMenu {
 
     public static void deleteAnsprechpartner(){
         System.out.print("Bitte ID des Ansprechpartner eingeben: ");
-        long id = getIDFromInput(new Scanner(System.in));
+        final long id = getIDFromInput(new Scanner(System.in));
         final Optional<Ansprechpartner> ansprechpartner = AnsprechpartnerDatabase.getAnsprechpartner(id);
         if (ansprechpartner.isEmpty()) {
             System.out.print("Kein Ansprechpartner mit dieser ID vorhanden!");
@@ -87,5 +93,28 @@ public final class AnsprechpartnerMenu {
             ansprechpartnerMenu();
         ansprechpartner.ifPresent(AnsprechpartnerDatabase::removeAnsprechpartner);
         ansprechpartnerMenu();
+    }
+
+    public static Unternehmen pickUnternehmen(){
+        System.out.print("Unternemhen auswählen[P] oder erstellen[C]?[P/C]");
+        final String option = new Scanner(System.in).next();
+        switch (option) {
+            case "C" -> {
+                return createUnternehmen();
+            }
+            case "P" ->{
+                System.out.println(UnternehmenList.getFormatted(UnternehmenDatabase.getUnternehmen()));
+                System.out.print("Bitte ID des Unternehmens eingeben: ");
+                final long id = getIDFromInput(new Scanner(System.in));
+                if (UnternehmenDatabase.getUnternehmen(id).isEmpty()) {
+                    System.err.println("ID könnte nicht gefunden werden!");
+                    return null;
+                }
+                return UnternehmenDatabase.getUnternehmen(id).get();
+            }
+            default -> {
+                return null;
+            }
+        }
     }
 }
