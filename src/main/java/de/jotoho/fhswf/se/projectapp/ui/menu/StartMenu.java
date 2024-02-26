@@ -1,3 +1,8 @@
+/*
+    SPDX-License-Identifier: AGPL-3.0-only
+    SPDX-FileCopyrightText: 2024 Tim Beckmann <beckmann.tim@fh-swf.de>
+    SPDX-FileCopyrightText: 2024 Jonas Tobias Hopusch <git@jotoho.de>
+*/
 package de.jotoho.fhswf.se.projectapp.ui.menu;
 
 import de.jotoho.fhswf.se.projectapp.backend.database.Database;
