@@ -1,3 +1,8 @@
+/*
+    SPDX-License-Identifier: AGPL-3.0-only
+    SPDX-FileCopyrightText: 2024 Tim Beckmann <beckmann.tim@fh-swf.de>
+    SPDX-FileCopyrightText: 2024 Jonas Tobias Hopusch <git@jotoho.de>
+*/
 package de.jotoho.fhswf.se.projectapp;
 
 import de.jotoho.fhswf.se.projectapp.backend.database.*;
@@ -19,7 +24,7 @@ public class Main {
         projekt.setTextOutline("Outline");
         projekt.setFeedback("Feedback");
         projekt.addMember(student);
-        
+
         StudentDatabase.addStudent(student);
         UnternehmenDatabase.addUnternehmen(unternehmen);
         AnsprechpartnerDatabase.addAnsprechpartner(ansprechpartner);
